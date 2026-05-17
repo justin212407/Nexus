@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.env
+nexus.db
+*.db
+node_modules/
+frontend/dist/
+.DS_Store
+.pytest_cache/
+*.egg-info/

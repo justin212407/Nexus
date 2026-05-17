@@ -1,0 +1,20 @@
+{
+  "type": "notification_event",
+  "app_id": "demo_app",
+  "data": {
+    "item": {
+      "id": "ticket_payment",
+      "user": {
+        "email": "priya.sharma@enterprise.com"
+      },
+      "conversation_message": {
+        "body": "All our payments are failing. We've had 50 customers complain in the last 5 minutes. Is your payment system down?"
+      },
+      "created_at": "2025-05-10T16:00:00",
+      "priority": "urgent",
+      "tags": {
+        "tags": [{"name": "payment"}, {"name": "outage"}]
+      }
+    }
+  }
+}

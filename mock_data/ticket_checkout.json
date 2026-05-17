@@ -1,0 +1,20 @@
+{
+  "type": "notification_event",
+  "app_id": "demo_app",
+  "data": {
+    "item": {
+      "id": "ticket_checkout",
+      "user": {
+        "email": "sarah.chen@acmecorp.com"
+      },
+      "conversation_message": {
+        "body": "Hi, I've been trying to complete my checkout for the past 30 minutes and keep getting a server error. This is costing my business money. Please help urgently."
+      },
+      "created_at": "2025-05-10T14:38:00",
+      "priority": "urgent",
+      "tags": {
+        "tags": [{"name": "payment"}, {"name": "urgent"}]
+      }
+    }
+  }
+}

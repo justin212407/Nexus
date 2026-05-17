@@ -1,0 +1,23 @@
+[
+  {
+    "sentry_issue_id": "SENT-4721",
+    "error_title": "NullPointerException",
+    "error_culprit": "PaymentService.java:processCheckout",
+    "error_level": "error",
+    "error_occurrences": 1203,
+    "error_first_seen": "2025-05-10T14:21:00",
+    "error_last_seen": "2025-05-10T14:38:00",
+    "affected_users": 847,
+    "slack_thread_ts": "2025-05-10T14:23:00",
+    "slack_message": "seeing some payment errors, investigating now",
+    "slack_author": "alice",
+    "slack_channel": "#engineering",
+    "deploy_sha": "a3f8c12",
+    "deploy_time": "2025-05-10T14:18:00",
+    "deploy_description": "refactor: payment gateway timeout handling",
+    "linear_issue_id": "LIN-2847",
+    "linear_title": "Payment checkout failing with NPE on timeout",
+    "linear_status": "In Progress",
+    "linear_assignee": "alice"
+  }
+]

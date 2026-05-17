@@ -1,0 +1,20 @@
+{
+  "type": "notification_event",
+  "app_id": "demo_app",
+  "data": {
+    "item": {
+      "id": "ticket_login",
+      "user": {
+        "email": "james.wu@startup.io"
+      },
+      "conversation_message": {
+        "body": "I can't log into my account. It keeps saying my password is wrong but I'm sure it's correct. Can you help?"
+      },
+      "created_at": "2025-05-10T15:10:00",
+      "priority": "normal",
+      "tags": {
+        "tags": [{"name": "login"}]
+      }
+    }
+  }
+}

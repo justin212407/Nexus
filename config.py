@@ -1,3 +1,5 @@
+import os
+
 from pydantic_settings import BaseSettings
 
 
@@ -7,6 +9,7 @@ class Settings(BaseSettings):
 
     # Intercom - required for live dispatch
     INTERCOM_ACCESS_TOKEN: str = ""
+    INTERCOM_ADMIN_ID: str = ""
     INTERCOM_WEBHOOK_SECRET: str = "demo_secret"
 
     # Slack - required for live escalation
@@ -27,4 +30,4 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 
-settings = Settings()
+settings = Settings(ANTHROPIC_API_KEY=os.getenv("ANTHROPIC_API_KEY", ""))

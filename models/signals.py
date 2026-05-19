@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 
 
 @dataclass
@@ -26,7 +27,7 @@ class SlackSignal:
 class DeploySignal:
     found: bool
     deploy_sha: str | None
-    deploy_time: str | None
+    deploy_time: datetime | None
     minutes_before_ticket: int | None
     description: str | None
 

@@ -8,5 +8,5 @@ class TicketContext:
     customer_email: str
     message_body: str
     created_at: datetime
-    priority: str  # "urgent" | "normal" | "low"
+    priority: str  # urgent | normal | low
     tags: list[str]

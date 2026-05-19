@@ -1,0 +1,131 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zenith"
+version = "1.0.0"
+description = "Customer Escalation Intelligence Agent - Transform support tickets into structured technical diagnoses via Coral Protocol"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Built on Coral Protocol", email = "info@zenith.local" }
+]
+keywords = [
+    "customer-support",
+    "incident-management",
+    "agent",
+    "coral-protocol",
+    "langgraph",
+    "fastapi"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+dependencies = [
+    "fastapi==0.110.0",
+    "uvicorn[standard]==0.29.0",
+    "langgraph==0.1.19",
+    "anthropic==0.25.0",
+    "langchain-core==0.2.29",
+    "pydantic==2.7.4",
+    "pydantic-settings==2.2.1",
+    "sqlalchemy==2.0.29",
+    "slack-bolt==1.18.0",
+    "httpx==0.27.0",
+    "python-dotenv==1.0.1",
+    "pytest==8.1.2",
+    "pytest-asyncio==0.23.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.1.2",
+    "pytest-asyncio==0.23.6"
+]
+
+[project.urls]
+Repository = "https://github.com/yourusername/zenith"
+Documentation = "https://github.com/yourusername/zenith#readme"
+Issues = "https://github.com/yourusername/zenith/issues"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \env1
+  | build
+  | dist
+  | frontend
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+target_versions = ["py311"]
+skip_glob = ["*/migrations/*", "frontend/*"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.pylint]
+max-line-length = 100
+disable = ["missing-docstring", "too-few-public-methods"]
+
+[tool.coverage.run]
+source = ["agents", "api", "coral", "db", "integrations", "models", "pipeline"]
+omit = ["*/tests/*", "*/__init__.py"]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "agents",
+    "api",
+    "coral",
+    "db",
+    "integrations",
+    "models",
+    "pipeline",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "if typing.TYPE_CHECKING:"
+]

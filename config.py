@@ -1,11 +1,9 @@
-import os
-
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     # LLM - required in all modes
-    ANTHROPIC_API_KEY: str
+    ANTHROPIC_API_KEY: str = ""
 
     # Intercom - required for live dispatch
     INTERCOM_ACCESS_TOKEN: str = ""
@@ -30,4 +28,4 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 
-settings = Settings(ANTHROPIC_API_KEY=os.getenv("ANTHROPIC_API_KEY", ""))
+settings = Settings()

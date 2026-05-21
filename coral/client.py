@@ -19,18 +19,12 @@ def coral_query(
 
     final_sql = sql
 
-    # Simple parameter replacement
+    cmd = ["coral", "sql", final_sql, "--format", "json"]
     if params:
-
-        for key, value in params.items():
-
-            final_sql = final_sql.replace(
-                f":{key}",
-                f"'{value}'",
-            )
+        cmd.extend(["--params", json.dumps(params)])
 
     result = subprocess.run(
-        ["coral", "sql", final_sql, "--format", "json"],
+        cmd,
         capture_output=True,
         text=True,
         timeout=30,

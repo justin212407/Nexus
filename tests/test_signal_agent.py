@@ -85,7 +85,7 @@ def test_signal_agent_false_alarm_fixture(mock_ticket):
 def test_signal_agent_payment_fixture_all_null(mock_ticket):
     state = {
         "ticket": mock_ticket,
-        "result_set": load_fixture("coral_result_c.json"),
+        "result_set": load_fixture("scenario_b_all_null.json"),
         "sentry_signal": None,
         "slack_signal": None,
         "deploy_signal": None,

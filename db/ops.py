@@ -10,7 +10,7 @@ def save_brief(ticket, brief) -> None:
 
         db.execute(
             """
-            INSERT OR IGNORE INTO incidents
+            INSERT OR REPLACE INTO incidents
             (
                 ticket_id,
                 customer_email,
@@ -144,14 +144,15 @@ def log_dispatch(
 
     with get_session() as db:
 
-        db.execute(
-            """
-            UPDATE incidents
-            SET
-                resolved_at = CURRENT_TIMESTAMP
-            WHERE ticket_id = ?
-            """,
-            (ticket_id,),
-        )
+        if dispatched:
+            db.execute(
+                """
+                UPDATE incidents
+                SET
+                    resolved_at = CURRENT_TIMESTAMP
+                WHERE ticket_id = ?
+                """,
+                (ticket_id,),
+            )
 
         db.commit()

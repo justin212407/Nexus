@@ -50,6 +50,8 @@ def test_webhook_accepts_valid_hmac(client, monkeypatch):
 
     def fake_add_task(self, func, *args, **kwargs):
         captured["func"] = func
+        captured["args"] = args
+        captured["kwargs"] = kwargs
 
     monkeypatch.setattr(webhook.BackgroundTasks, "add_task", fake_add_task)
 
@@ -64,3 +66,4 @@ def test_webhook_accepts_valid_hmac(client, monkeypatch):
 
     assert response.status_code == 200
     assert captured["func"] is webhook.run_pipeline
+    assert captured["args"][0].ticket_id == "ticket_login"

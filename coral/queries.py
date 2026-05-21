@@ -12,13 +12,13 @@ SELECT
   -- SENTRY SIGNALS
   -- =====================================================
   s.issue_id           AS sentry_issue_id,
-  s.title              AS sentry_error_title,
-  s.culprit            AS sentry_culprit,
-  s.level              AS sentry_level,
-  s.times_seen         AS sentry_occurrences,
-  s.first_seen         AS sentry_first_seen,
+  s.title              AS error_title,
+  s.culprit            AS error_culprit,
+  s.level              AS error_level,
+  s.times_seen         AS error_occurrences,
+  s.first_seen         AS error_first_seen,
   s.last_seen          AS sentry_last_seen,
-  s.user_count         AS sentry_affected_users,
+  s.user_count         AS affected_users,
 
   -- =====================================================
   -- SLACK SIGNALS
@@ -40,7 +40,7 @@ SELECT
   -- LINEAR SIGNALS
   -- =====================================================
   l.identifier         AS linear_issue_id,
-  l.title              AS linear_issue_title,
+  l.title              AS linear_title,
   l.state_name         AS linear_status,
   l.assignee_name      AS linear_assignee
 

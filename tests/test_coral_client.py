@@ -38,4 +38,5 @@ def test_coral_query_executes_subprocess_in_live_mode(monkeypatch):
     )
 
     assert result == [{"ok": True}]
-    assert "ticket_checkout" in observed["cmd"][2]
+    assert observed["cmd"][2] == "SELECT * FROM tickets WHERE id = :ticket_id"
+    assert observed["cmd"][-2:] == ["--params", json.dumps({"ticket_id": "ticket_checkout"})]

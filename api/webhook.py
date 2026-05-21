@@ -59,7 +59,7 @@ async def run_pipeline(ticket: TicketContext):
         })
 
         # Run graph
-        final_state = nexus_graph.invoke({
+        final_state = await nexus_graph.ainvoke({
             "ticket": ticket
         })
 
@@ -148,10 +148,7 @@ async def intercom_webhook(
 
             tags=[
                 tag["name"]
-                for tag in item.get(
-                    "tags",
-                    {},
-                ).get("tags", [])
+                for tag in (item.get("tags") or {}).get("tags", [])
             ],
         )
 

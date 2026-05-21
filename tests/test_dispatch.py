@@ -118,4 +118,5 @@ def test_dispatch_escalates_on_critical_severity(monkeypatch, mock_ticket, mock_
     dispatch_agent.run_dispatch_agent(state)
 
     assert calls["intercom"] == [("ticket_checkout", critical)]
-    assert calls["slack"]
+    assert len(calls["slack"]) == 1
+    assert calls["slack"][0]["channel"] == dispatch_agent.settings.SLACK_ESCALATION_CHANNEL

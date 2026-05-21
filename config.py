@@ -3,10 +3,11 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # LLM - required in all modes
-    ANTHROPIC_API_KEY: str
+    ANTHROPIC_API_KEY: str = ""
 
     # Intercom - required for live dispatch
     INTERCOM_ACCESS_TOKEN: str = ""
+    INTERCOM_ADMIN_ID: str = ""
     INTERCOM_WEBHOOK_SECRET: str = "demo_secret"
 
     # Slack - required for live escalation

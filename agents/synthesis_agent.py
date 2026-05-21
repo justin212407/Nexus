@@ -1,7 +1,176 @@
+import json
+from dataclasses import asdict, dataclass, field
+from typing import Any
+
+from anthropic import Anthropic
+from pydantic import ValidationError
+
+from config import settings
+from db import ops as db_ops
+from models.brief import TechnicalBrief
 from pipeline.state import NexusState
 
 
+client = Anthropic()
+
+
+SYSTEM_PROMPT = (
+    "You are NEXUS, a customer escalation intelligence system. "
+    "Return valid JSON only, with no Markdown fences or explanatory text. "
+    "root_cause must be one of: known_bug, service_degradation, user_error, "
+    "external_dependency, unknown. confidence_pct must be an integer percentage. "
+    "causal_chain must be an array of strings. linear_issue_id must be null "
+    "when absent, never an empty string."
+)
+
+
+@dataclass
+class HistoricalContext:
+    root_cause: str | None = None
+    confidence_pct: int | None = None
+    affected_service: str | None = None
+    matches: list[dict[str, Any]] = field(default_factory=list)
+    count: int = 0
+
+
+def _historical_context_from_pattern(pattern: dict | None) -> HistoricalContext:
+    if not pattern:
+        return HistoricalContext()
+
+    matches = pattern.get("matches", [])
+    if not isinstance(matches, list):
+        matches = []
+
+    count = pattern.get("count", len(matches))
+    if not isinstance(count, int):
+        count = len(matches)
+
+    confidence_pct = pattern.get("confidence_pct")
+    if confidence_pct is not None:
+        try:
+            confidence_pct = int(confidence_pct)
+        except (TypeError, ValueError):
+            confidence_pct = None
+
+    return HistoricalContext(
+        root_cause=pattern.get("root_cause"),
+        confidence_pct=confidence_pct,
+        affected_service=pattern.get("affected_service"),
+        matches=matches,
+        count=count,
+    )
+
+
+def _dump_dataclass(value: Any) -> str:
+    return json.dumps(value.__dict__, default=str)
+
+
+def _parse_brief(raw_text: str) -> TechnicalBrief:
+    cleaned = raw_text.strip()
+
+    if cleaned.startswith("```"):
+        cleaned = cleaned.removeprefix("```json").removeprefix("```").strip()
+        if cleaned.endswith("```"):
+            cleaned = cleaned[: -3].strip()
+
+    parsed = json.loads(cleaned)
+    return TechnicalBrief(**parsed)
+
+
+def _call_claude(prompt: str):
+    if settings.DEMO_MODE:
+        return type(
+            "DemoResponse",
+            (),
+            {
+                "content": [
+                    type(
+                        "DemoText",
+                        (),
+                        {
+                            "text": json.dumps(
+                                {
+                                    "root_cause": "unknown",
+                                    "confidence_pct": 0,
+                                    "severity": "low",
+                                    "affected_service": "unknown",
+                                    "affected_users": 0,
+                                    "causal_chain": [],
+                                    "engineer_summary": "",
+                                    "draft_customer_response": "",
+                                    "recommended_action": "",
+                                    "linear_issue_id": None,
+                                }
+                            )
+                        },
+                    )()
+                ]
+            },
+        )()
+
+    return client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=1000,
+        temperature=0,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+
 def run_synthesis_agent(state: NexusState) -> dict:
-    """Calls Claude API. Returns TechnicalBrief."""
-    # TODO: implement — see copilot-instructions.md synthesis_agent section
-    raise NotImplementedError("synthesis_agent not yet implemented")
+    """Calls Claude API and validates the TechnicalBrief response."""
+
+    ticket = state["ticket"]
+    sentry = state["sentry_signal"]
+    slack = state["slack_signal"]
+    deploy = state["deploy_signal"]
+    linear = state["linear_signal"]
+    pattern = state.get("pattern_match")
+
+    user_prompt = (
+        f"Ticket: {_dump_dataclass(ticket)}\n"
+        f"Sentry: {_dump_dataclass(sentry)}\n"
+        f"Slack: {_dump_dataclass(slack)}\n"
+        f"Deploy: {_dump_dataclass(deploy)}\n"
+        f"Linear: {_dump_dataclass(linear)}\n"
+    )
+
+    if pattern:
+        historical_context = _historical_context_from_pattern(pattern)
+        user_prompt += (
+            f"Historical context: {json.dumps(asdict(historical_context), default=str)}\n"
+        )
+
+    user_prompt += (
+        "Return a TechnicalBrief JSON object with the exact keys: "
+        "root_cause, confidence_pct, severity, affected_service, "
+        "affected_users, causal_chain, engineer_summary, "
+        "draft_customer_response, recommended_action, linear_issue_id. "
+        "Return valid JSON only. root_cause must be one of: known_bug, "
+        "service_degradation, user_error, external_dependency, unknown. "
+        "confidence_pct must be an integer percentage. causal_chain must be "
+        "an array of strings. linear_issue_id must be null when absent, "
+        "never an empty string."
+    )
+
+    last_error: Exception | None = None
+    prompt = user_prompt
+
+    for attempt in range(2):
+        try:
+            response = _call_claude(prompt)
+            raw_text = response.content[0].text
+            brief = _parse_brief(raw_text)
+            db_ops.save_brief(ticket, brief)
+            return {"brief": brief}
+        except (json.JSONDecodeError, ValidationError) as exc:
+            last_error = exc
+            prompt = (
+                f"{user_prompt}\n\nPrevious response failed validation. "
+                "Return only valid JSON with the exact keys requested."
+            )
+
+    if last_error is not None:
+        raise last_error
+
+    raise RuntimeError("synthesis failed")

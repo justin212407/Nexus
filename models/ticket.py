@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Literal
 
 
 @dataclass
@@ -8,5 +9,5 @@ class TicketContext:
     customer_email: str
     message_body: str
     created_at: datetime
-    priority: str  # "urgent" | "normal" | "low"
+    priority: Literal["urgent", "normal", "low"]
     tags: list[str]

@@ -16,7 +16,12 @@ CREATE TABLE IF NOT EXISTS incidents (
 """
 
 CREATE_INDEXES = """
-CREATE INDEX IF NOT EXISTS idx_incidents_customer ON incidents(customer_email);
-CREATE INDEX IF NOT EXISTS idx_incidents_service  ON incidents(affected_service);
-CREATE INDEX IF NOT EXISTS idx_incidents_cause    ON incidents(root_cause);
+CREATE INDEX IF NOT EXISTS idx_incidents_customer
+ON incidents(customer_email);
+
+CREATE INDEX IF NOT EXISTS idx_incidents_service
+ON incidents(affected_service);
+
+CREATE INDEX IF NOT EXISTS idx_incidents_cause
+ON incidents(root_cause);
 """

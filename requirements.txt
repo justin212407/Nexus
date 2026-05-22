@@ -6,7 +6,7 @@ langchain-core==0.2.29
 pydantic==2.7.4
 pydantic-settings==2.2.1
 sqlalchemy==2.0.29
-slack-bolt==1.18.0
+slack-bolt==1.28.0
 httpx==0.27.0
 python-dotenv==1.0.1
 pytest==8.1.2

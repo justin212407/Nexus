@@ -9,9 +9,11 @@ from config import settings
 app = FastAPI(
     title="NEXUS",
     version="1.0.0",
-    description="Customer Escalation Intelligence Agent",
+    description="Customer Escalation Intelligence Agent — Built on Coral Protocol",
 )
 
+# Allow all origins for local dev and demo day.
+# In production this would be locked to specific domains.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,11 +28,16 @@ app.include_router(stream_router)
 
 @app.on_event("startup")
 async def startup():
+    """Initialise SQLite on every startup. CREATE TABLE IF NOT EXISTS is idempotent."""
     init_db()
 
 
 @app.get("/health")
 async def health():
+    """
+    Health check endpoint. Returns mode so the dashboard can show
+    DEMO / LIVE indicator without reading env vars on the client.
+    """
     return {
         "status": "ok",
         "mode": "demo" if settings.DEMO_MODE else "live",

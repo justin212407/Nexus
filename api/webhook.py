@@ -9,6 +9,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 
 from api.stream import broadcast
 from config import settings
+from db import ops as db_ops
 from models.ticket import TicketContext
 from pipeline.graph import nexus_graph
 
@@ -51,25 +52,47 @@ async def run_pipeline(ticket: TicketContext):
             "ticket_id": ticket.ticket_id,
         })
 
-        # OPTIONAL PROGRESS EVENT
-        await broadcast({
-            "event": "processing",
-            "ticket_id": ticket.ticket_id,
-            "stage": "graph_execution",
-        })
-
         # Run graph
         final_state = await nexus_graph.ainvoke({
             "ticket": ticket
         })
 
+        await broadcast({
+            "event": "coral_done",
+            "ticket_id": ticket.ticket_id,
+            "row_count": len(final_state.get("result_set", [])),
+        })
+
+        signals_found = []
+        if getattr(final_state.get("sentry_signal"), "found", False):
+            signals_found.append("sentry")
+        if getattr(final_state.get("slack_signal"), "found", False):
+            signals_found.append("slack")
+        if getattr(final_state.get("deploy_signal"), "found", False):
+            signals_found.append("deploy")
+        if getattr(final_state.get("linear_signal"), "found", False):
+            signals_found.append("linear")
+
+        await broadcast({
+            "event": "signal_done",
+            "ticket_id": ticket.ticket_id,
+            "signals_found": signals_found,
+        })
+
         brief = final_state.get("brief")
+
+        await broadcast({
+            "event": "synthesis_done",
+            "ticket_id": ticket.ticket_id,
+            "confidence_pct": brief.confidence_pct if brief else 0,
+            "root_cause": brief.root_cause if brief else "unknown",
+        })
 
         # SUCCESS EVENT
         await broadcast({
             "event": "completed",
             "ticket_id": ticket.ticket_id,
-            "brief": brief.dict() if brief else None,
+            "brief": brief.model_dump() if brief else None,
         })
 
     except Exception as e:
@@ -161,14 +184,14 @@ async def intercom_webhook(
     # DEDUP CHECK
     async with ticket_lock:
 
+        if db_ops.ticket_exists(ticket.ticket_id):
+            return {
+                "status": "already_processed",
+                "ticket_id": ticket.ticket_id,
+            }
+
         # Intercom retry detected
         if ticket.ticket_id in active_ticket_runs:
-
-            await broadcast({
-                "event": "duplicate_ignored",
-                "ticket_id": ticket.ticket_id,
-            })
-
             return {
                 "status": "duplicate_ignored",
                 "ticket_id": ticket.ticket_id,

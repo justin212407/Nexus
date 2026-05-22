@@ -1,5 +1,4 @@
-from dataclasses import dataclass, field
-from datetime import datetime
+from dataclasses import dataclass
 
 
 @dataclass
@@ -19,15 +18,15 @@ class SlackSignal:
     found: bool
     thread_count: int
     earliest_mention: str | None
-    messages: list[dict] = field(default_factory=list)
-    already_known: bool = False
+    messages: list[dict]
+    already_known: bool
 
 
 @dataclass
 class DeploySignal:
     found: bool
     deploy_sha: str | None
-    deploy_time: datetime | None
+    deploy_time: str | None
     minutes_before_ticket: int | None
     description: str | None
 

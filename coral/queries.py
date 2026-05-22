@@ -11,13 +11,14 @@ SELECT
   -- =====================================================
   -- SENTRY SIGNALS
   -- =====================================================
-  s.title              AS sentry_error_title,
-  s.culprit            AS sentry_culprit,
-  s.level              AS sentry_level,
-  s.times_seen         AS sentry_occurrences,
-  s.first_seen         AS sentry_first_seen,
-  s.last_seen          AS sentry_last_seen,
-  s.user_count         AS sentry_affected_users,
+  s.issue_id           AS sentry_issue_id,
+  s.title              AS error_title,
+  s.culprit            AS error_culprit,
+  s.level              AS error_level,
+  s.times_seen         AS error_occurrences,
+  s.first_seen         AS error_first_seen,
+  s.last_seen          AS error_last_seen,
+  s.user_count         AS affected_users,
 
   -- =====================================================
   -- SLACK SIGNALS
@@ -26,7 +27,6 @@ SELECT
   sl.text              AS slack_message,
   sl.user              AS slack_author,
   sl.channel           AS slack_channel,
-  sl.ts                AS slack_created_at,
 
   -- =====================================================
   -- DEPLOY SIGNALS

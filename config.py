@@ -3,24 +3,33 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # LLM - required in all modes
-    ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_API_KEY: str
 
-    # Intercom - required for live dispatch
+    # -- Intercom --
+    # Required for live dispatch. Not needed when DEMO_MODE=true.
     INTERCOM_ACCESS_TOKEN: str = ""
     INTERCOM_ADMIN_ID: str = ""
     INTERCOM_WEBHOOK_SECRET: str = "demo_secret"
+    INTERCOM_ADMIN_ID: str = ""
 
-    # Slack - required for live escalation
+    # -- Slack --
+    # Required for live escalation posting. Not needed in DEMO_MODE.
     SLACK_BOT_TOKEN: str = ""
     SLACK_ESCALATION_CHANNEL: str = "#nexus-alerts"
 
-    # Coral sources - required for live mode
+    # -- Coral sources --
+    # Used by Coral Protocol CLI for live data source auth.
+    # Not needed when DEMO_MODE=true - mock fixtures are used instead.
     SENTRY_ORG_SLUG: str = ""
     GITHUB_TOKEN: str = ""
     LINEAR_API_KEY: str = ""
 
-    # Behaviour
+    # -- Behaviour --
+    # DEMO_MODE=true -> use mock JSON fixtures, skip all external API calls
+    # except Anthropic. Set this to true for all local dev and demo day.
     DEMO_MODE: bool = False
+
+    # Confidence below this triggers Slack escalation in dispatch_agent.
     CONFIDENCE_THRESHOLD: int = 70
     DATABASE_URL: str = "sqlite:///nexus.db"
 

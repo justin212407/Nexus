@@ -3,6 +3,7 @@ from types import SimpleNamespace
 
 import coral.client as coral_client
 from coral.queries import MASTER_QUERY
+from tests.coral_contract import CANONICAL_CORAL_ALIASES, extract_master_query_aliases
 
 
 def test_coral_query_uses_fixture_in_demo_mode(monkeypatch):
@@ -44,27 +45,4 @@ def test_coral_query_executes_subprocess_in_live_mode(monkeypatch):
 
 
 def test_master_query_uses_canonical_alias_contract():
-    expected_aliases = [
-        "AS sentry_issue_id",
-        "AS error_title",
-        "AS error_culprit",
-        "AS error_level",
-        "AS error_occurrences",
-        "AS error_first_seen",
-        "AS error_last_seen",
-        "AS affected_users",
-        "AS slack_thread_ts",
-        "AS slack_message",
-        "AS slack_author",
-        "AS slack_channel",
-        "AS deploy_sha",
-        "AS deploy_time",
-        "AS deploy_description",
-        "AS linear_issue_id",
-        "AS linear_title",
-        "AS linear_status",
-        "AS linear_assignee",
-    ]
-
-    for alias in expected_aliases:
-        assert alias in MASTER_QUERY
+    assert extract_master_query_aliases(MASTER_QUERY) == CANONICAL_CORAL_ALIASES

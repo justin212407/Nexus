@@ -31,3 +31,14 @@ async def test_stream_requires_event_shape():
 
     with pytest.raises(ValueError):
         await stream.broadcast({"ticket_id": "ticket_checkout"})
+
+    with pytest.raises(ValueError):
+        await stream.broadcast({"event": "started"})
+
+
+@pytest.mark.asyncio
+async def test_stream_endpoint_headers():
+    response = await stream.stream()
+
+    assert response.media_type == "text/event-stream"
+    assert response.headers["x-accel-buffering"] == "no"

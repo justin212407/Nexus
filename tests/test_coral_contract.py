@@ -12,7 +12,10 @@ def test_coral_result_fixtures_match_master_query_alias_contract():
     expected_keys = set(extract_master_query_aliases(MASTER_QUERY))
     assert expected_keys == set(CANONICAL_CORAL_ALIASES)
 
-    for fixture_path in FIXTURES.glob("coral_result*.json"):
+    fixture_paths = list(FIXTURES.glob("coral_result*.json"))
+    assert fixture_paths, f"No coral_result*.json fixtures found in {FIXTURES}"
+
+    for fixture_path in fixture_paths:
         rows = json.loads(fixture_path.read_text())
         assert rows, f"{fixture_path.name} must include at least one row"
 

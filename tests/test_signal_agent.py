@@ -78,16 +78,9 @@ def test_signal_agent_false_alarm_fixture(mock_ticket):
     assert result["linear_signal"].found is False
 
 
-def test_signal_agent_scenario_b_all_null_no_crashes(mock_ticket):
-    result = run_signal_agent(make_state(mock_ticket, "coral_result_b.json"))
-
-    assert result["sentry_signal"].found is False
-    assert result["slack_signal"].found is False
-    assert result["slack_signal"].thread_count == 0
-    assert result["slack_signal"].already_known is False
-    assert result["slack_signal"].messages == []
-    assert result["deploy_signal"].found is False
-    assert result["linear_signal"].found is False
+# Duplicate test removed: `test_signal_agent_false_alarm_fixture` already covers
+# the all-null scenario (coral_result_b.json). Keeping a single canonical test
+# prevents maintenance drift and accidental divergence.
 
 
 def test_signal_agent_scenario_c_matches_current_all_null_fixture(mock_ticket):

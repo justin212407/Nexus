@@ -112,7 +112,7 @@ async def test_run_pipeline_emits_canonical_lifecycle_events(monkeypatch, mock_t
     async def fake_broadcast(event):
         events.append(event)
 
-    monkeypatch.setattr(webhook.nexus_graph, "ainvoke", fake_ainvoke)
+    monkeypatch.setattr(webhook, "nexus_graph", SimpleNamespace(ainvoke=fake_ainvoke))
     monkeypatch.setattr(webhook, "broadcast", fake_broadcast)
 
     webhook.active_ticket_runs.add(mock_ticket.ticket_id)

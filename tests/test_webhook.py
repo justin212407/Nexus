@@ -221,6 +221,48 @@ async def test_run_pipeline_emits_canonical_lifecycle_events(monkeypatch, mock_t
 
 
 @pytest.mark.asyncio
+async def test_run_pipeline_handles_scenario_b_all_null_signals(
+    monkeypatch,
+    mock_ticket,
+    mock_brief,
+):
+    events = []
+    scenario_b_rows = json.loads(
+        (Path(__file__).resolve().parents[1] / "mock_data" / "coral_result_b.json").read_text()
+    )
+
+    async def fake_ainvoke(payload):
+        return {
+            "result_set": scenario_b_rows,
+            "sentry_signal": SimpleNamespace(found=False),
+            "slack_signal": SimpleNamespace(found=False),
+            "deploy_signal": SimpleNamespace(found=False),
+            "linear_signal": SimpleNamespace(found=False),
+            "brief": mock_brief,
+        }
+
+    async def fake_broadcast(event):
+        events.append(event)
+
+    monkeypatch.setattr(webhook, "nexus_graph", SimpleNamespace(ainvoke=fake_ainvoke))
+    monkeypatch.setattr(webhook, "broadcast", fake_broadcast)
+
+    webhook.active_ticket_runs.add(mock_ticket.ticket_id)
+    await webhook.run_pipeline(mock_ticket)
+
+    assert [event["event"] for event in events] == [
+        "started",
+        "coral_done",
+        "signal_done",
+        "synthesis_done",
+        "completed",
+    ]
+    assert events[1]["row_count"] == 1
+    assert events[2]["signals_found"] == []
+    assert mock_ticket.ticket_id not in webhook.active_ticket_runs
+
+
+@pytest.mark.asyncio
 async def test_run_pipeline_emits_error_and_cleans_active_ticket(monkeypatch, mock_ticket):
     events = []
 

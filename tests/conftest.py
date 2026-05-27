@@ -5,6 +5,17 @@ from models.ticket import TicketContext
 from models.brief import TechnicalBrief
 from models.signals import SentrySignal, SlackSignal, DeploySignal, LinearSignal
 from main import app
+from config import settings
+
+# Ensure tests run in DEMO_MODE by default
+# This prevents tests from trying to call real Coral CLI
+pytest_plugins = []
+
+
+@pytest.fixture(autouse=True)
+def ensure_demo_mode(monkeypatch):
+    """Ensure DEMO_MODE is enabled for all tests."""
+    monkeypatch.setattr(settings, "DEMO_MODE", True)
 
 
 @pytest.fixture

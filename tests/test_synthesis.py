@@ -1,13 +1,24 @@
 import json
+import pytest
 from types import SimpleNamespace
 from typing import cast
 
 import agents.synthesis_agent as synthesis_agent
 from pipeline.state import NexusState
+from config import settings
 
 
 def make_response(payload: str):
     return SimpleNamespace(content=[SimpleNamespace(text=payload)])
+
+
+@pytest.fixture
+def disable_demo_mode(monkeypatch):
+    """Override ensure_demo_mode fixture for synthesis tests.
+    
+    Synthesis tests need DEMO_MODE=False to test Claude API mocking.
+    """
+    monkeypatch.setattr(settings, "DEMO_MODE", False)
 
 
 def sample_state(mock_ticket):
@@ -50,7 +61,7 @@ def sample_state(mock_ticket):
     })
 
 
-def test_synthesis_builds_prompt_and_validates(monkeypatch, mock_ticket):
+def test_synthesis_builds_prompt_and_validates(monkeypatch, mock_ticket, disable_demo_mode):
     prompts = []
     saved = {}
 
@@ -92,7 +103,7 @@ def test_synthesis_builds_prompt_and_validates(monkeypatch, mock_ticket):
     assert saved["brief"].root_cause == "known_bug"
 
 
-def test_synthesis_retries_after_json_failure(monkeypatch, mock_ticket):
+def test_synthesis_retries_after_json_failure(monkeypatch, mock_ticket, disable_demo_mode):
     calls = []
     saved = {}
 

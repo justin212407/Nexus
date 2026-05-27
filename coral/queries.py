@@ -4,6 +4,15 @@
 # 2. agents/signal_agent.py
 #
 # These files are tightly coupled.
+#
+# CORAL SOURCES SETUP (for real Coral integration):
+# - intercom.conversations — Intercom API (ticket metadata) [NOT connected — uses webhook input]
+# - sentry.issues — Sentry API token [Connect with: coral source add sentry]
+# - slack.messages — Slack Bot token [Connect with: coral source add slack]
+# - github.deployments — GitHub personal access token [Connect with: coral source add github]
+# - linear.issues — Linear API key [Connect with: coral source add linear]
+#
+# Status: Set DEMO_MODE=false and populate .env with tokens to enable real sources.
 
 MASTER_QUERY = """
 SELECT

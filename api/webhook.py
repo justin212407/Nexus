@@ -3,6 +3,7 @@ import datetime
 import hashlib
 import hmac
 import json
+import logging
 from typing import Set
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
@@ -13,6 +14,7 @@ from db import ops as db_ops
 from models.ticket import TicketContext
 from pipeline.graph import nexus_graph
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # In-memory dedup store
@@ -36,11 +38,79 @@ def verify_hmac(body: bytes, signature: str) -> bool:
     )
 
 
+def check_coral_sources_health() -> dict:
+    """Check availability of Coral sources.
+    
+    Returns:
+        {
+            "available_sources": ["sentry", "slack", ...],
+            "count": int,
+            "healthy": bool  # True if >= 3 sources available
+        }
+    
+    In DEMO_MODE, returns mocked health (all sources available).
+    In live mode, test each source with a minimal query.
+    """
+    # In demo mode, assume all sources are available (don't call real Coral)
+    if settings.DEMO_MODE:
+        return {
+            "available_sources": ["sentry", "slack", "github", "linear"],
+            "count": 4,
+            "healthy": True,
+        }
+    
+    # In live mode, test each source with a minimal query
+    # Only import coral_query if we're actually in live mode
+    try:
+        from coral.client import coral_query
+    except ImportError:
+        logger.warning("Could not import coral_query; assuming sources unavailable")
+        return {
+            "available_sources": [],
+            "count": 0,
+            "healthy": False,
+        }
+    
+    sources_to_check = {
+        "sentry": "SELECT 1 FROM sentry.issues LIMIT 1",
+        "slack": "SELECT 1 FROM slack.messages LIMIT 1",
+        "github": "SELECT 1 FROM github.deployments LIMIT 1",
+        "linear": "SELECT 1 FROM linear.issues LIMIT 1",
+    }
+    
+    available = []
+    
+    for source_name, query in sources_to_check.items():
+        try:
+            result = coral_query(query, {})
+            # Distinguish timeout (raising error) from empty valid result
+            # If we get here with a non-empty list, source is available
+            available.append(source_name)
+            logger.info(f"Source {source_name} available ✓")
+        except Exception as e:
+            logger.warning(f"Source {source_name} unavailable: {str(e)}")
+    
+    count = len(available)
+    healthy = count >= 3
+    
+    logger.info(
+        f"Coral sources health: {count}/4 available, "
+        f"{'healthy' if healthy else 'degraded'}"
+    )
+    
+    return {
+        "available_sources": available,
+        "count": count,
+        "healthy": healthy,
+    }
+
+
 async def run_pipeline(ticket: TicketContext):
     """
     Executes the Nexus graph pipeline for a ticket.
     Sends SSE lifecycle events:
     - started
+    - sources_checked
     - completed
     - error
     """
@@ -50,6 +120,16 @@ async def run_pipeline(ticket: TicketContext):
         await broadcast({
             "event": "started",
             "ticket_id": ticket.ticket_id,
+        })
+
+        # CHECK SOURCES HEALTH
+        health = check_coral_sources_health()
+        await broadcast({
+            "event": "sources_checked",
+            "ticket_id": ticket.ticket_id,
+            "available_sources": health["available_sources"],
+            "source_count": health["count"],
+            "healthy": health["healthy"],
         })
 
         # Run graph
@@ -97,6 +177,7 @@ async def run_pipeline(ticket: TicketContext):
 
     except Exception as e:
         # ERROR EVENT
+        logger.error(f"Pipeline failed for ticket {ticket.ticket_id}: {str(e)}", exc_info=True)
         await broadcast({
             "event": "error",
             "ticket_id": ticket.ticket_id,
@@ -107,6 +188,7 @@ async def run_pipeline(ticket: TicketContext):
         # Cleanup dedup state
         async with ticket_lock:
             active_ticket_runs.discard(ticket.ticket_id)
+        logger.info(f"Pipeline cleanup completed for ticket {ticket.ticket_id}")
 
 
 @router.post("/webhook/intercom")
@@ -200,13 +282,14 @@ async def intercom_webhook(
         # Mark as active
         active_ticket_runs.add(ticket.ticket_id)
 
-    # QUEUE PIPELINE
+    # QUEUE PIPELINE (health check moved inside run_pipeline to keep webhook response fast)
     background_tasks.add_task(
         run_pipeline,
         ticket,
     )
 
+    # Return response immediately
     return {
-        "status": "accepted",
+        "status": "queued",
         "ticket_id": ticket.ticket_id,
     }

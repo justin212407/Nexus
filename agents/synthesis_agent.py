@@ -1,4 +1,5 @@
 import json
+import logging
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
@@ -10,7 +11,7 @@ from db import ops as db_ops
 from models.brief import TechnicalBrief
 from pipeline.state import NexusState
 
-
+logger = logging.getLogger(__name__)
 client = Anthropic()
 
 
@@ -162,15 +163,26 @@ def run_synthesis_agent(state: NexusState) -> dict:
             raw_text = response.content[0].text
             brief = _parse_brief(raw_text)
             db_ops.save_brief(ticket, brief)
+            logger.info(f"Synthesis succeeded for ticket {ticket.ticket_id}")
             return {"brief": brief}
         except (json.JSONDecodeError, ValidationError) as exc:
             last_error = exc
+            logger.warning(
+                f"Synthesis attempt {attempt + 1}/2 failed for ticket {ticket.ticket_id}: "
+                f"{exc.__class__.__name__}: {str(exc)[:100]}"
+            )
             prompt = (
                 f"{user_prompt}\n\nPrevious response failed validation. "
                 "Return only valid JSON with the exact keys requested."
             )
 
+    # All retries exhausted; include last_error context
     if last_error is not None:
-        raise last_error
+        error_msg = (
+            f"synthesis failed after retries: "
+            f"{last_error.__class__.__name__}: {str(last_error)[:200]}"
+        )
+        logger.error(f"Final synthesis error for ticket {ticket.ticket_id}: {error_msg}")
+        raise RuntimeError(error_msg)
 
-    raise RuntimeError("synthesis failed")
+    raise RuntimeError("synthesis failed (no error details available)")

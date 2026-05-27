@@ -1,6 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import AgentStatus from '../AgentStatus'
+import '@testing-library/jest-dom'
+import AgentStatus from './AgentStatus'
 
 describe('AgentStatus component', () => {
   describe('error visualization', () => {

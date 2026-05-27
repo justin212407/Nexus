@@ -51,7 +51,7 @@ def test_webhook_accepts_demo_bypass_and_schedules_task(client, monkeypatch):
     )
 
     assert response.status_code == 200
-    assert response.json()["status"] == "accepted"
+    assert response.json()["status"] == "queued"
     assert captured["func"] is webhook.run_pipeline
     assert captured["args"][0].ticket_id == "ticket_checkout"
 

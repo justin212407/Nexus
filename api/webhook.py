@@ -83,7 +83,8 @@ def check_coral_sources_health() -> dict:
     for source_name, query in sources_to_check.items():
         try:
             result = coral_query(query, {})
-            # If query returns anything (even empty), source is available
+            # Distinguish timeout (raising error) from empty valid result
+            # If we get here with a non-empty list, source is available
             available.append(source_name)
             logger.info(f"Source {source_name} available ✓")
         except Exception as e:
@@ -281,26 +282,14 @@ async def intercom_webhook(
         # Mark as active
         active_ticket_runs.add(ticket.ticket_id)
 
-    # CHECK SOURCE HEALTH (early feedback to caller)
-    health = check_coral_sources_health()
-
-    # QUEUE PIPELINE
+    # QUEUE PIPELINE (health check moved inside run_pipeline to keep webhook response fast)
     background_tasks.add_task(
         run_pipeline,
         ticket,
     )
 
-    # Return response with health status
-    response = {
-        "status": "degraded" if not health["healthy"] else "accepted",
+    # Return response immediately
+    return {
+        "status": "queued",
         "ticket_id": ticket.ticket_id,
-        "available_sources": health["available_sources"],
-        "source_count": health["count"],
     }
-    
-    if not health["healthy"]:
-        response["message"] = (
-            f"Investigation may be incomplete: only {health['count']}/4 sources available"
-        )
-    
-    return response

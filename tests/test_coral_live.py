@@ -15,10 +15,13 @@ from tests.coral_contract import CANONICAL_CORAL_ALIASES, extract_master_query_a
 from config import settings
 
 
-pytestmark = pytest.mark.skipif(
-    settings.DEMO_MODE,
-    reason="Only runs with real Coral sources (DEMO_MODE=false)"
-)
+@pytest.fixture(autouse=True)
+def require_live_coral(monkeypatch):
+    """Skip in demo mode and force live Coral mode for this module's tests."""
+    original_demo_mode = settings.DEMO_MODE
+    if original_demo_mode:
+        pytest.skip("Only runs with real Coral sources (DEMO_MODE=false)")
+    monkeypatch.setattr(settings, "DEMO_MODE", False)
 
 
 def test_master_query_aliases_are_correct():

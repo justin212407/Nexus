@@ -12,7 +12,7 @@ class TestCoralQueryTimeout:
     """Test coral_query timeout handling and retry logic."""
 
     def test_coral_query_timeout_returns_empty_list_after_retries(self, monkeypatch):
-        """When subprocess times out, should retry twice then return empty list."""
+        """When subprocess times out after retries, should raise RuntimeError."""
         monkeypatch.setattr(settings, "DEMO_MODE", False)
         
         call_count = [0]
@@ -22,10 +22,12 @@ class TestCoralQueryTimeout:
             raise subprocess.TimeoutExpired("coral", 30)
         
         monkeypatch.setattr(subprocess, "run", fake_run)
+        monkeypatch.setattr("coral.client.time.sleep", Mock())  # Skip actual sleep
         
-        result = coral_client.coral_query("SELECT 1", {"ticket_id": "test"})
+        with pytest.raises(RuntimeError) as exc_info:
+            coral_client.coral_query("SELECT 1", {"ticket_id": "test"})
         
-        assert result == []
+        assert "timeout" in str(exc_info.value).lower()
         assert call_count[0] == 2  # Should retry exactly once after initial failure
 
     def test_coral_query_retries_once_on_first_timeout(self, monkeypatch):

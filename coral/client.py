@@ -62,12 +62,16 @@ def coral_query(
                 logger.info(f"Retrying after {delay}s...")
                 time.sleep(delay)
             else:
-                # Final timeout: return empty list (source unavailable)
+                # Final timeout: raise to distinguish from valid empty result
                 logger.error(
                     "Coral query failed after retries (timeout). "
                     "Source may be unavailable."
                 )
-                return []
+                raise RuntimeError(
+                    "Coral query timeout after retries. "
+                    "The subprocess did not respond within 30 seconds. "
+                    "Coral sources may be unavailable or overloaded."
+                )
 
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse Coral JSON response: {str(e)}")

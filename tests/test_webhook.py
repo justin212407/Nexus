@@ -208,15 +208,16 @@ async def test_run_pipeline_emits_canonical_lifecycle_events(monkeypatch, mock_t
 
     assert [event["event"] for event in events] == [
         "started",
+        "sources_checked",
         "coral_done",
         "signal_done",
         "synthesis_done",
         "completed",
     ]
-    assert events[1]["row_count"] == 2
-    assert events[2]["signals_found"] == ["sentry", "deploy"]
-    assert events[3]["confidence_pct"] == mock_brief.confidence_pct
-    assert events[3]["root_cause"] == mock_brief.root_cause
+    assert events[2]["row_count"] == 2
+    assert events[3]["signals_found"] == ["sentry", "deploy"]
+    assert events[4]["confidence_pct"] == mock_brief.confidence_pct
+    assert events[4]["root_cause"] == mock_brief.root_cause
     assert mock_ticket.ticket_id not in webhook.active_ticket_runs
 
 
@@ -252,13 +253,14 @@ async def test_run_pipeline_handles_scenario_b_all_null_signals(
 
     assert [event["event"] for event in events] == [
         "started",
+        "sources_checked",
         "coral_done",
         "signal_done",
         "synthesis_done",
         "completed",
     ]
-    assert events[1]["row_count"] == 1
-    assert events[2]["signals_found"] == []
+    assert events[2]["row_count"] == 1
+    assert events[3]["signals_found"] == []
     assert mock_ticket.ticket_id not in webhook.active_ticket_runs
 
 
@@ -278,6 +280,6 @@ async def test_run_pipeline_emits_error_and_cleans_active_ticket(monkeypatch, mo
     webhook.active_ticket_runs.add(mock_ticket.ticket_id)
     await webhook.run_pipeline(mock_ticket)
 
-    assert [event["event"] for event in events] == ["started", "error"]
-    assert events[1]["message"] == "graph failed"
+    assert [event["event"] for event in events] == ["started", "sources_checked", "error"]
+    assert events[2]["message"] == "graph failed"
     assert mock_ticket.ticket_id not in webhook.active_ticket_runs

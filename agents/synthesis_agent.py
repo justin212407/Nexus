@@ -82,28 +82,36 @@ def _parse_brief(raw_text: str) -> TechnicalBrief:
 def _load_fallback_brief(sentry, slack, deploy, linear) -> TechnicalBrief | None:
     """Load a fallback brief based on signal patterns.
     
-    Returns None if no suitable fallback exists.
+    Returns None if no suitable fallback exists. Handles None signals gracefully.
     """
+    # Safely check signal states (handle None signals)
+    sentry_found = getattr(sentry, "found", False) if sentry else False
+    deploy_found = getattr(deploy, "found", False) if deploy else False
+    slack_found = getattr(slack, "found", False) if slack else False
+    
+    # Resolve paths relative to this module, not CWD
+    module_dir = Path(__file__).parent.parent
+    
     # Scenario A: Known bug pattern (Sentry + Deploy + Slack)
-    if sentry.found and deploy.found and slack.found:
-        fallback_path = Path("mock_data/brief_fallback_a.json")
+    if sentry_found and deploy_found and slack_found:
+        fallback_path = module_dir / "mock_data" / "brief_fallback_a.json"
         if fallback_path.exists():
             try:
                 data = json.loads(fallback_path.read_text())
                 return TechnicalBrief(**data)
-            except Exception as e:
-                logger.warning(f"Failed to load fallback_a: {e}")
+            except (FileNotFoundError, json.JSONDecodeError, ValidationError) as e:
+                logger.warning(f"Failed to load fallback_a: {e.__class__.__name__}: {str(e)[:100]}")
                 return None
     
     # Scenario B: User error pattern (all signals null or missing)
-    if not sentry.found and not deploy.found and not slack.found:
-        fallback_path = Path("mock_data/brief_fallback_b.json")
+    if not sentry_found and not deploy_found and not slack_found:
+        fallback_path = module_dir / "mock_data" / "brief_fallback_b.json"
         if fallback_path.exists():
             try:
                 data = json.loads(fallback_path.read_text())
                 return TechnicalBrief(**data)
-            except Exception as e:
-                logger.warning(f"Failed to load fallback_b: {e}")
+            except (FileNotFoundError, json.JSONDecodeError, ValidationError) as e:
+                logger.warning(f"Failed to load fallback_b: {e.__class__.__name__}: {str(e)[:100]}")
                 return None
     
     return None

@@ -7,16 +7,18 @@ logger = logging.getLogger(__name__)
 
 
 def log_outbound_request(service: str, method: str, url: str, **kwargs):
-    """Log outbound API requests. In DEMO_MODE, skip actual HTTP calls."""
+    """Log-only wrapper for API calls. Does not execute HTTP requests.
+    
+    This helper is used to audit all outbound API calls in DEMO_MODE.
+    In live mode, callers use requests directly with full headers/auth.
+    """
     if settings.DEMO_MODE:
         logger.info(
             f"[DEMO] Would call {service}: {method} {url} | "
             f"params={kwargs.get('params')}, data_keys={list(kwargs.get('json', {}).keys())}"
         )
-        return None
-    
-    logger.info(f"Calling {service}: {method} {url}")
-    return requests.request(method, url, **kwargs)
+    else:
+        logger.info(f"Calling {service}: {method} {url}")
 
 
 def format_intercom_note(brief) -> str:
@@ -63,15 +65,12 @@ def post_internal_note(ticket_id: str, brief) -> None:
             f"https://api.intercom.io/conversations/{ticket_id}/reply",
             json={"message_type": "note", "body": note}
         )
-        logger.info(f"[DEMO] Intercom note for ticket {ticket_id}:\n{note}")
+        print(f"\n[NEXUS -> Intercom] Ticket {ticket_id}")
+        print(note)
         return
 
     # Live Intercom API call
-    log_outbound_request(
-        "Intercom",
-        "POST",
-        f"https://api.intercom.io/conversations/{ticket_id}/reply"
-    )
+    log_outbound_request("Intercom", "POST", f"https://api.intercom.io/conversations/{ticket_id}/reply")
     response = requests.post(
         f"https://api.intercom.io/conversations/{ticket_id}/reply",
         headers={

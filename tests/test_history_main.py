@@ -28,11 +28,12 @@ def test_stats_endpoint_returns_required_breakdowns(client, monkeypatch):
     response = client.get("/stats")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "classification_breakdown": {"root_cause": 1},
-        "severity_breakdown": {"severity": 1},
-        "top_services": {"affected_service": 1},
-    }
+    stats = response.json()
+    assert stats["classification_breakdown"] == {"root_cause": 1}
+    assert stats["severity_breakdown"] == {"severity": 1}
+    assert stats["top_service"] == "affected_service"
+    assert stats["total_incidents"] == 1
+    assert stats["avg_confidence_pct"] == 75
 
 
 def test_health_reports_ok_and_mode(client, monkeypatch):

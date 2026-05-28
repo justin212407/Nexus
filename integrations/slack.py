@@ -1,6 +1,24 @@
+import logging
 import requests
 
 from config import settings
+
+logger = logging.getLogger(__name__)
+
+
+def log_outbound_request(service: str, method: str, url: str, **kwargs):
+    """Log-only wrapper for API calls. Does not execute HTTP requests.
+    
+    This helper is used to audit all outbound API calls in DEMO_MODE.
+    In live mode, callers use requests directly with full headers/auth.
+    """
+    if settings.DEMO_MODE:
+        logger.info(
+            f"[DEMO] Would call {service}: {method} {url} | "
+            f"params={kwargs.get('params')}, data_keys={list(kwargs.get('json', {}).keys())}"
+        )
+    else:
+        logger.info(f"Calling {service}: {method} {url}")
 
 
 def get_confidence_color(confidence: int) -> str:
@@ -122,13 +140,19 @@ def post_escalation(ticket, brief, channel: str) -> None:
         ticket,
     )
 
-    # Demo/local mode
     if settings.DEMO_MODE:
+        log_outbound_request(
+            "Slack",
+            "POST",
+            "https://slack.com/api/chat.postMessage",
+            json={"channel": channel, "blocks": blocks}
+        )
         print(f"\n[NEXUS -> Slack] Channel {channel}")
         print(blocks)
         return
 
     # Live Slack API call
+    log_outbound_request("Slack", "POST", "https://slack.com/api/chat.postMessage")
     response = requests.post(
         "https://slack.com/api/chat.postMessage",
         headers={

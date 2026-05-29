@@ -1,63 +1,42 @@
 import sqlite3
 from contextlib import contextmanager
-
+from typing import Generator
 from config import settings
 
 
-def init_db():
-    """Create tables and indexes on startup."""
+def _db_path() -> str:
+    return settings.DATABASE_URL.replace("sqlite:///", "")
 
-    from db.models import (
-        CREATE_INCIDENTS_TABLE,
-        CREATE_INDEXES,
-    )
 
-    db_path = settings.DATABASE_URL.replace(
-        "sqlite:///",
-        "",
-    )
-
-    conn = sqlite3.connect(db_path)
-
-    # Better concurrent SQLite behavior
+def init_db() -> None:
+    from db.models import CREATE_INCIDENTS_TABLE, CREATE_INDEXES
+    conn = sqlite3.connect(_db_path())
     conn.execute("PRAGMA journal_mode=WAL")
-
+    conn.execute("PRAGMA foreign_keys=ON")
     conn.execute(CREATE_INCIDENTS_TABLE)
-
-    for stmt in CREATE_INDEXES.strip().split(";"):
-
-        if stmt.strip():
-            conn.execute(stmt)
-
+    for stmt in CREATE_INDEXES:
+        conn.execute(stmt)
     conn.commit()
     conn.close()
 
 
 @contextmanager
 def get_session():
-    """SQLite session helper."""
-
-    db_path = settings.DATABASE_URL.replace(
-        "sqlite:///",
-        "",
-    )
-
-    conn = sqlite3.connect(db_path)
-
+    conn = sqlite3.connect(_db_path())
     conn.row_factory = sqlite3.Row
-
-    # Enable FK support
-    conn.execute("PRAGMA foreign_keys = ON")
-
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA foreign_keys=ON")
     try:
         yield conn
-
         conn.commit()
-
     except Exception:
-
         conn.rollback()
         raise
-
     finally:
         conn.close()
+
+
+def get_db():
+    """SQLAlchemy-style generator that wraps get_session for compatibility."""
+    with get_session() as conn:
+        yield conn

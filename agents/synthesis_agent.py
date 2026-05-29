@@ -119,34 +119,7 @@ def _load_fallback_brief(sentry, slack, deploy, linear) -> TechnicalBrief | None
 
 def _call_claude(prompt: str):
     if settings.DEMO_MODE:
-        return type(
-            "DemoResponse",
-            (),
-            {
-                "content": [
-                    type(
-                        "DemoText",
-                        (),
-                        {
-                            "text": json.dumps(
-                                {
-                                    "root_cause": "unknown",
-                                    "confidence_pct": 0,
-                                    "severity": "low",
-                                    "affected_service": "unknown",
-                                    "affected_users": 0,
-                                    "causal_chain": [],
-                                    "engineer_summary": "",
-                                    "draft_customer_response": "",
-                                    "recommended_action": "",
-                                    "linear_issue_id": None,
-                                }
-                            )
-                        },
-                    )()
-                ]
-            },
-        )()
+        raise ValueError("DEMO_MODE: skip Claude, load fallback brief")
 
     return client.messages.create(
         model="claude-sonnet-4-20250514",
@@ -205,7 +178,7 @@ def run_synthesis_agent(state: NexusState) -> dict:
             db_ops.save_brief(ticket, brief)
             logger.info(f"Synthesis succeeded for ticket {ticket.ticket_id}")
             return {"brief": brief}
-        except (json.JSONDecodeError, ValidationError) as exc:
+        except (json.JSONDecodeError, ValidationError, ValueError) as exc:
             last_error = exc
             retry_count = attempt + 1
             logger.warning(

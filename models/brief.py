@@ -1,13 +1,11 @@
-from typing import Literal
-
 from pydantic import BaseModel, field_validator
+from typing import Literal
 
 
 class TechnicalBrief(BaseModel):
     # -- Classification --
     # Claude must return exactly one of these five strings.
     # dispatch_agent routes differently based on this value.
-
     root_cause: Literal[
         "known_bug",
         "service_degradation",
@@ -18,18 +16,10 @@ class TechnicalBrief(BaseModel):
 
     # 0-100 integer. Below CONFIDENCE_THRESHOLD triggers Slack escalation.
     # Validator coerces string "87" -> int 87 (Claude sometimes returns strings).
-
     confidence_pct: int
 
     # Severity gates Slack escalation - "critical" always escalates regardless of confidence.
-
-    severity: Literal[
-        "low",
-        "medium",
-        "high",
-        "critical",
-    ]
-
+    severity: Literal["low", "medium", "high", "critical"]
 
     # -- Incident details --
     affected_service: str
@@ -37,7 +27,6 @@ class TechnicalBrief(BaseModel):
 
     # -- LLM-generated content --
     # Each string in causal_chain must start with a timestamp (e.g. "14:18 - deploy pushed")
-
     causal_chain: list[str]
 
     # Technical summary for the engineer - max 3 sentences
@@ -52,7 +41,7 @@ class TechnicalBrief(BaseModel):
     # -- Optional fields --
     # Linear issue ID e.g. "LIN-2847". Null when no existing bug was found.
     # Never empty string - validator converts "" to None.
-    linear_issue_id: str | None
+    linear_issue_id: str | None = None
 
     # Additional fields for richer reporting
     affected_endpoint: str | None = None
@@ -67,10 +56,7 @@ class TechnicalBrief(BaseModel):
         """
         return int(v)
 
-    @field_validator(
-        "linear_issue_id",
-        mode="before",
-    )
+    @field_validator("linear_issue_id", mode="before")
     @classmethod
     def empty_string_to_none(cls, v):
         """

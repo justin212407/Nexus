@@ -1,17 +1,16 @@
 {
-  "root_cause": "user_error",
-  "confidence_pct": 88,
-  "severity": "low",
-  "affected_service": "auth-service",
-  "affected_users": 1,
-  "causal_chain": [
-    "2025-05-28T15:45:00Z: No matching errors in Sentry for this user",
-    "2025-05-28T15:45:15Z: No internal alerts detected in Slack",
-    "2025-05-28T15:45:30Z: No recent deployments correlating with issue time",
-    "2025-05-28T15:46:00Z: Customer cannot log in"
-  ],
-  "engineer_summary": "No technical errors detected. This is likely a user authentication issue (incorrect credentials, browser cache, or email verification problem). No internal system errors correlate with the reported issue.",
-  "draft_customer_response": "We don't see any errors on our end. Please try clearing your browser cache, resetting your password, or checking your email for verification links. If you continue to experience issues, please reply with more details.",
-  "recommended_action": "Provide customer with password reset and cache-clearing instructions. Monitor for repeated reports from this customer.",
-  "linear_issue_id": null
+    "root_cause": "user_error",
+    "confidence_pct": 78,
+    "severity": "low",
+    "affected_service": "checkout-api",
+    "affected_users": 1,
+    "causal_chain": [
+        "No Sentry errors detected for this customer",
+        "No recent deploys in the error window",
+        "No engineering Slack discussion found"
+    ],
+    "engineer_summary": "No system-level signals detected. Likely isolated user-side issue.",
+    "draft_customer_response": "We investigated and our systems appear to be functioning normally. Please try clearing your browser cache and attempting again.",
+    "recommended_action": "Route to tier-1 support for user-side troubleshooting",
+    "linear_issue_id": null
 }

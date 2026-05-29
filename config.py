@@ -2,13 +2,13 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # LLM - required in all modes
+    # -- LLM --
+    # Required in all modes. The only API called during DEMO_MODE.
     ANTHROPIC_API_KEY: str
 
     # -- Intercom --
     # Required for live dispatch. Not needed when DEMO_MODE=true.
     INTERCOM_ACCESS_TOKEN: str = ""
-    INTERCOM_ADMIN_ID: str = ""
     INTERCOM_WEBHOOK_SECRET: str = "demo_secret"
     INTERCOM_ADMIN_ID: str = ""
 

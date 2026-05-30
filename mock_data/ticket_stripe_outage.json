@@ -1,0 +1,22 @@
+{
+  "ticket_id": "ticket_stripe_outage",
+  "sentry_issue_id": "SENT-9901",
+  "error_title": "Stripe::APIConnectionError",
+  "error_culprit": "PaymentGateway.charge()",
+  "error_level": "fatal",
+  "error_occurrences": 3421,
+  "error_first_seen": "2025-05-10T15:00:00",
+  "error_last_seen": "2025-05-10T15:45:00",
+  "affected_users": 2100,
+  "slack_thread_ts": "2025-05-10T15:05:00",
+  "slack_message": "Stripe status page showing degraded performance globally",
+  "slack_author": "bob",
+  "slack_channel": "#engineering",
+  "deploy_sha": null,
+  "deploy_time": null,
+  "deploy_description": null,
+  "linear_issue_id": "LIN-9901",
+  "linear_title": "Stripe global outage affecting all payment processing",
+  "linear_status": "In Progress",
+  "linear_assignee": "bob"
+}

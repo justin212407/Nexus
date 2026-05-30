@@ -1,14 +1,14 @@
 {
     "root_cause": "user_error",
-    "confidence_pct": 78,
+    "confidence_pct": 88,
     "severity": "low",
     "summary": "No system-level signals detected for this customer. Likely an isolated user-side issue.",
     "affected_service": "checkout-api",
     "affected_users": 1,
     "causal_chain": [
-        "No Sentry errors detected for this customer",
-        "No recent deploys in the error window",
-        "No engineering Slack discussion found"
+        "No Sentry errors detected matching this customer",
+        "No recent deploys in the 4-hour error window",
+        "No engineering discussion found in Slack"
     ],
     "engineer_summary": "No system-level signals detected. Likely isolated user-side issue.",
     "draft_customer_response": "We investigated and our systems appear to be functioning normally. Please try clearing your browser cache and attempting again.",

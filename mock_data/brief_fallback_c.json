@@ -1,0 +1,18 @@
+{
+    "root_cause": "external_dependency",
+    "confidence_pct": 89,
+    "severity": "critical",
+    "summary": "Stripe payment gateway reporting global degradation. All payment processing affected across all customers.",
+    "affected_service": "payment-gateway",
+    "affected_users": 2100,
+    "causal_chain": [
+        "Sentry captured Stripe::APIConnectionError across 3,421 requests",
+        "Stripe status page confirmed degraded performance globally",
+        "No internal deploys in the window — external cause confirmed"
+    ],
+    "engineer_summary": "This is a Stripe-side outage. No internal code changes caused this. Monitor Stripe status page and implement retry logic with exponential backoff.",
+    "draft_customer_response": "We are aware of a payment processing issue affecting our platform. This is caused by an outage with our payment provider Stripe, which is actively working to resolve it. We'll update you as soon as payments are restored.",
+    "recommended_action": "Monitor https://status.stripe.com — no rollback needed. Enable retry queue for failed payments.",
+    "signals_used": ["sentry", "slack"],
+    "linear_issue_id": "LIN-9901"
+}

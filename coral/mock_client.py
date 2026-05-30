@@ -17,6 +17,16 @@ def mock_query(params: dict) -> list[dict]:
         "ticket_checkout",
     )
 
+    lower_ticket_id = str(ticket_id).lower()
+
+    if "false" in lower_ticket_id:
+        fixture_path = Path("mock_data/ticket_false_alarm.json")
+        return [json.loads(fixture_path.read_text())]
+
+    if "stripe" in lower_ticket_id:
+        fixture_path = Path("mock_data/ticket_stripe_outage.json")
+        return [json.loads(fixture_path.read_text())]
+
     key = (
         ticket_id
         if ticket_id in FIXTURE_MAP

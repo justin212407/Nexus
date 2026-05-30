@@ -4,6 +4,19 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+# PROMPT ITERATION LOG — Day 4
+# Scenario A run 1-5: all returned root_cause=known_bug (DEMO_MODE fallback)
+# Live mode considerations:
+# - causal_chain: instruct Claude to use timestamps from signal data, not generic descriptions
+# - draft_customer_response: must be empathetic and non-technical ("our team is investigating"
+#   not "NullPointerException in PaymentService")
+# - confidence_pct: Claude tends to return 95+ for all known_bug cases; add instruction:
+#   "confidence_pct should reflect signal completeness: 90+ only if Sentry+Deploy+Slack all found"
+# SYSTEM_PROMPT additions to make:
+# - "causal_chain items must reference specific signal data (error IDs, deploy SHAs, timestamps)"
+# - "draft_customer_response must be empathetic, under 50 words, avoid technical jargon"
+# - "confidence_pct: 85-95 if all signals found, 60-80 if partial, 40-60 if no signals"
+
 from anthropic import Anthropic
 from pydantic import ValidationError
 

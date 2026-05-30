@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # -- Intercom --
     # Required for live dispatch. Not needed when DEMO_MODE=true.
     INTERCOM_ACCESS_TOKEN: str = ""
+    INTERCOM_TOKEN: str = ""
     INTERCOM_WEBHOOK_SECRET: str = "demo_secret"
     INTERCOM_ADMIN_ID: str = ""
 
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     # Required for live escalation posting. Not needed in DEMO_MODE.
     SLACK_BOT_TOKEN: str = ""
     SLACK_ESCALATION_CHANNEL: str = "#nexus-alerts"
+    SLACK_CHANNEL: str = "#nexus-alerts"
 
     # -- Coral sources --
     # Used by Coral Protocol CLI for live data source auth.

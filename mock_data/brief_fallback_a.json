@@ -2,6 +2,7 @@
     "root_cause": "known_bug",
     "confidence_pct": 91,
     "severity": "high",
+    "summary": "Payment processor TypeError introduced in deploy abc123 causing checkout failures for all users.",
     "affected_service": "checkout-api",
     "affected_users": 847,
     "causal_chain": [
@@ -12,5 +13,6 @@
     "engineer_summary": "Payment processor TypeError introduced in deploy abc123. Stripe SDK version pinned incorrectly.",
     "draft_customer_response": "We have identified the root cause and our engineering team is deploying a fix now. Expected resolution within 30 minutes.",
     "recommended_action": "Roll back deploy abc123 or pin stripe-sdk==5.4.0 in requirements.txt",
+    "signals_used": ["sentry", "slack", "deploy"],
     "linear_issue_id": null
 }

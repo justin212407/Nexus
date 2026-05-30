@@ -71,6 +71,8 @@ def test_synthesis_builds_prompt_and_validates(monkeypatch, mock_ticket, disable
         "severity": "high",
         "affected_service": "PaymentService",
         "affected_users": 847,
+        "summary": "Deploy introduced a payment bug.",
+        "signals_used": ["sentry", "slack", "deploy"],
         "causal_chain": ["2025-05-10T14:18:00 deploy", "2025-05-10T14:21:00 error"],
         "engineer_summary": "Deploy introduced a payment bug.",
         "draft_customer_response": "We found the issue and are working on it.",

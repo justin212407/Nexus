@@ -2,6 +2,7 @@
     "root_cause": "user_error",
     "confidence_pct": 78,
     "severity": "low",
+    "summary": "No system-level signals detected for this customer. Likely an isolated user-side issue.",
     "affected_service": "checkout-api",
     "affected_users": 1,
     "causal_chain": [
@@ -12,5 +13,6 @@
     "engineer_summary": "No system-level signals detected. Likely isolated user-side issue.",
     "draft_customer_response": "We investigated and our systems appear to be functioning normally. Please try clearing your browser cache and attempting again.",
     "recommended_action": "Route to tier-1 support for user-side troubleshooting",
+    "signals_used": [],
     "linear_issue_id": null
 }

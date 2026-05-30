@@ -100,15 +100,14 @@ def _load_fallback_brief(
     linear,
 ) -> tuple[TechnicalBrief | None, str | None]:
     """Load a fallback brief based on signal patterns.
-
     Returns (brief, fallback_label). Handles None signals gracefully.
     """
     sentry_found = getattr(sentry, "found", False) if sentry else False
     deploy_found = getattr(deploy, "found", False) if deploy else False
     slack_found = getattr(slack, "found", False) if slack else False
-
     module_dir = Path(__file__).parent.parent
 
+    # Scenario A: Known bug (Sentry + Deploy + Slack all found)
     if sentry_found and deploy_found and slack_found:
         fallback_path = module_dir / "mock_data" / "brief_fallback_a.json"
         if fallback_path.exists():
@@ -116,11 +115,32 @@ def _load_fallback_brief(
                 data = json.loads(fallback_path.read_text())
                 return TechnicalBrief(**data), "a"
             except (FileNotFoundError, json.JSONDecodeError, ValidationError) as exc:
-                logger.warning(
-                    f"Failed to load fallback a for ticket {ticket_id}: "
-                    f"{exc.__class__.__name__}: {str(exc)[:100]}"
-                )
+                logger.warning(f"Failed to load fallback a for ticket {ticket_id}: {exc.__class__.__name__}: {str(exc)[:100]}")
                 return None, None
+
+    # Scenario C: External dependency (Sentry found but no deploy)
+    if sentry_found and not deploy_found:
+        fallback_path = module_dir / "mock_data" / "brief_fallback_c.json"
+        if fallback_path.exists():
+            try:
+                data = json.loads(fallback_path.read_text())
+                return TechnicalBrief(**data), "c"
+            except (FileNotFoundError, json.JSONDecodeError, ValidationError) as exc:
+                logger.warning(f"Failed to load fallback c for ticket {ticket_id}: {exc.__class__.__name__}: {str(exc)[:100]}")
+                return None, None
+
+    # Scenario B: User error (no signals at all)
+    if not sentry_found and not deploy_found and not slack_found:
+        fallback_path = module_dir / "mock_data" / "brief_fallback_b.json"
+        if fallback_path.exists():
+            try:
+                data = json.loads(fallback_path.read_text())
+                return TechnicalBrief(**data), "b"
+            except (FileNotFoundError, json.JSONDecodeError, ValidationError) as exc:
+                logger.warning(f"Failed to load fallback b for ticket {ticket_id}: {exc.__class__.__name__}: {str(exc)[:100]}")
+                return None, None
+
+    return None, None
 
     if not sentry_found and not deploy_found and not slack_found:
         fallback_path = module_dir / "mock_data" / "brief_fallback_b.json"

@@ -1,0 +1,22 @@
+{
+  "ticket_id": "ticket_false_alarm",
+  "sentry_issue_id": null,
+  "error_title": null,
+  "error_culprit": null,
+  "error_level": null,
+  "error_occurrences": 0,
+  "error_first_seen": null,
+  "error_last_seen": null,
+  "affected_users": 1,
+  "slack_thread_ts": null,
+  "slack_message": null,
+  "slack_author": null,
+  "slack_channel": null,
+  "deploy_sha": null,
+  "deploy_time": null,
+  "deploy_description": null,
+  "linear_issue_id": null,
+  "linear_title": null,
+  "linear_status": null,
+  "linear_assignee": null
+}

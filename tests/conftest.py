@@ -43,6 +43,8 @@ def mock_brief():
         severity="high",
         affected_service="PaymentService",
         affected_users=847,
+        summary="Checkout failure caused by a production NullPointerException.",
+        signals_used=["sentry", "slack", "deploy"],
         causal_chain=[
             "14:18 - deploy a3f8c12 pushed to production",
             "14:21 - NullPointerException at PaymentService.java:processCheckout",

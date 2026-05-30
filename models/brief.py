@@ -24,6 +24,8 @@ class TechnicalBrief(BaseModel):
     # -- Incident details --
     affected_service: str
     affected_users: int
+    summary: str
+    signals_used: list[str]
 
     # -- LLM-generated content --
     # Each string in causal_chain must start with a timestamp (e.g. "14:18 - deploy pushed")

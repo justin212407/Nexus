@@ -79,42 +79,50 @@ def _parse_brief(raw_text: str) -> TechnicalBrief:
     return TechnicalBrief(**parsed)
 
 
-def _load_fallback_brief(sentry, slack, deploy, linear) -> TechnicalBrief | None:
+def _load_fallback_brief(
+    ticket_id: str,
+    sentry,
+    slack,
+    deploy,
+    linear,
+) -> tuple[TechnicalBrief | None, str | None]:
     """Load a fallback brief based on signal patterns.
-    
-    Returns None if no suitable fallback exists. Handles None signals gracefully.
+
+    Returns (brief, fallback_label). Handles None signals gracefully.
     """
-    # Safely check signal states (handle None signals)
     sentry_found = getattr(sentry, "found", False) if sentry else False
     deploy_found = getattr(deploy, "found", False) if deploy else False
     slack_found = getattr(slack, "found", False) if slack else False
-    
-    # Resolve paths relative to this module, not CWD
+
     module_dir = Path(__file__).parent.parent
-    
-    # Scenario A: Known bug pattern (Sentry + Deploy + Slack)
+
     if sentry_found and deploy_found and slack_found:
         fallback_path = module_dir / "mock_data" / "brief_fallback_a.json"
         if fallback_path.exists():
             try:
                 data = json.loads(fallback_path.read_text())
-                return TechnicalBrief(**data)
-            except (FileNotFoundError, json.JSONDecodeError, ValidationError) as e:
-                logger.warning(f"Failed to load fallback_a: {e.__class__.__name__}: {str(e)[:100]}")
-                return None
-    
-    # Scenario B: User error pattern (all signals null or missing)
+                return TechnicalBrief(**data), "a"
+            except (FileNotFoundError, json.JSONDecodeError, ValidationError) as exc:
+                logger.warning(
+                    f"Failed to load fallback a for ticket {ticket_id}: "
+                    f"{exc.__class__.__name__}: {str(exc)[:100]}"
+                )
+                return None, None
+
     if not sentry_found and not deploy_found and not slack_found:
         fallback_path = module_dir / "mock_data" / "brief_fallback_b.json"
         if fallback_path.exists():
             try:
                 data = json.loads(fallback_path.read_text())
-                return TechnicalBrief(**data)
-            except (FileNotFoundError, json.JSONDecodeError, ValidationError) as e:
-                logger.warning(f"Failed to load fallback_b: {e.__class__.__name__}: {str(e)[:100]}")
-                return None
-    
-    return None
+                return TechnicalBrief(**data), "b"
+            except (FileNotFoundError, json.JSONDecodeError, ValidationError) as exc:
+                logger.warning(
+                    f"Failed to load fallback b for ticket {ticket_id}: "
+                    f"{exc.__class__.__name__}: {str(exc)[:100]}"
+                )
+                return None, None
+
+    return None, None
 
 
 def _call_claude(prompt: str):
@@ -154,11 +162,15 @@ def run_synthesis_agent(state: NexusState) -> dict:
             f"Historical context: {json.dumps(asdict(historical_context), default=str)}\n"
         )
 
+    required_keys = (
+        "root_cause, confidence_pct, severity, affected_service, "
+        "affected_users, summary, signals_used, causal_chain, "
+        "engineer_summary, draft_customer_response, recommended_action, "
+        "linear_issue_id"
+    )
     user_prompt += (
         "Return a TechnicalBrief JSON object with the exact keys: "
-        "root_cause, confidence_pct, severity, affected_service, "
-        "affected_users, causal_chain, engineer_summary, "
-        "draft_customer_response, recommended_action, linear_issue_id. "
+        f"{required_keys}. "
         "Return valid JSON only. root_cause must be one of: known_bug, "
         "service_degradation, user_error, external_dependency, unknown. "
         "confidence_pct must be an integer percentage. causal_chain must be "
@@ -187,20 +199,23 @@ def run_synthesis_agent(state: NexusState) -> dict:
             )
             if attempt < max_attempts - 1:
                 prompt = (
-                    f"{user_prompt}\n\nPrevious response failed validation. "
-                    "Return only valid JSON with the exact keys requested."
+                    f"{user_prompt}\n\n"
+                    f"Previous response failed validation with error: "
+                    f"{exc.__class__.__name__}: {str(exc)[:200]}\n"
+                    "Return ONLY valid JSON. No markdown fences. No explanatory text. "
+                    f"Exact keys required: {required_keys}."
                 )
 
-    # All retries exhausted; try to use fallback brief
-    fallback_brief = _load_fallback_brief(sentry, slack, deploy, linear)
+    fallback_brief, fallback_label = _load_fallback_brief(
+        ticket.ticket_id, sentry, slack, deploy, linear
+    )
     if fallback_brief:
-        logger.warning(
-            f"Using fallback brief for ticket {ticket.ticket_id} after {max_attempts} retries"
-        )
         db_ops.save_brief(ticket, fallback_brief)
+        logger.warning(
+            f"Using fallback brief {fallback_label} for ticket {ticket.ticket_id}"
+        )
         return {"brief": fallback_brief}
 
-    # No fallback available; raise error
     if last_error is not None:
         error_msg = (
             f"synthesis failed after retries: "

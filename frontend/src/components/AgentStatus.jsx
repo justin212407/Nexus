@@ -83,6 +83,15 @@ const styles = `
   }
 `
 
+const STEP_LABELS = {
+  started: 'Ticket Received',
+  sources_checked: 'Sources Checked',
+  coral_done: 'Coral Query',
+  signal_done: 'Signal Transform',
+  synthesis_done: 'Claude Analysis',
+  completed: 'Completed'
+}
+
 export default function AgentStatus({ events, ticketId }) {
   const filteredEvents = events.filter((e) => e.ticket_id === ticketId)
   const eventMap = new Map(filteredEvents.map(e => [e.event, e]))
@@ -149,7 +158,7 @@ export default function AgentStatus({ events, ticketId }) {
             <div className="step-icon">
               {getStepIcon(step)}
             </div>
-            <span>{step}</span>
+            <span>{STEP_LABELS[step] || step}</span>
           </div>
         ))}
         

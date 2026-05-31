@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './MetricsBar.css'
 
-export default function MetricsBar() {
+export default function MetricsBar({ events }) {
   const [stats, setStats] = useState({
     total_incidents: 0,
     classification_breakdown: {},
@@ -11,10 +11,11 @@ export default function MetricsBar() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  // Fetch initial stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/stats')
+        const response = await fetch('http://localhost:8000/stats')
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const data = await response.json()
         setStats(data)
@@ -27,9 +28,35 @@ export default function MetricsBar() {
     }
 
     fetchStats()
-    const interval = setInterval(fetchStats, 10000) // Poll every 10s
+    const interval = setInterval(fetchStats, 30000) // Poll every 30s for fresh data
     return () => clearInterval(interval)
   }, [])
+
+  // Update metrics when a new brief is completed
+  useEffect(() => {
+    const completedEvents = events.filter(e => e.event === 'completed' && e.brief)
+    if (completedEvents.length === 0) return
+
+    const latestBrief = completedEvents[completedEvents.length - 1].brief
+    
+    setStats(prevStats => {
+      const breakdown = { ...prevStats.classification_breakdown }
+      const rootCause = latestBrief.root_cause
+      breakdown[rootCause] = (breakdown[rootCause] || 0) + 1
+
+      const total = prevStats.total_incidents + 1
+      const avgConfidence = Math.round(
+        (prevStats.avg_confidence_pct * prevStats.total_incidents + latestBrief.confidence_pct) / total
+      )
+
+      return {
+        classification_breakdown: breakdown,
+        total_incidents: total,
+        avg_confidence_pct: avgConfidence,
+        top_service: latestBrief.affected_service || prevStats.top_service,
+      }
+    })
+  }, [events])
 
   if (loading) return <div className="metrics-bar">Loading metrics...</div>
   if (error) return <div className="metrics-bar error">Failed to load stats: {error}</div>

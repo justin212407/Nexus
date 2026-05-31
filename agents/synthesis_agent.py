@@ -17,6 +17,12 @@ from typing import Any
 # - "draft_customer_response must be empathetic, under 50 words, avoid technical jargon"
 # - "confidence_pct: 85-95 if all signals found, 60-80 if partial, 40-60 if no signals"
 
+import json
+import logging
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+from typing import Any
+
 from anthropic import Anthropic
 from pydantic import ValidationError
 
@@ -26,7 +32,26 @@ from models.brief import TechnicalBrief
 from pipeline.state import NexusState
 
 logger = logging.getLogger(__name__)
-client = Anthropic()
+
+# Initialize appropriate client based on which API key is configured
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    OpenAI = None
+
+if settings.OPENROUTER_API_KEY and OPENAI_AVAILABLE:
+    client = OpenAI(
+        api_key=settings.OPENROUTER_API_KEY,
+        base_url="https://openrouter.io/api/v1"
+    )
+    USE_OPENROUTER = True
+    MODEL = "deepseek/deepseek-chat:free"
+else:
+    client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+    USE_OPENROUTER = False
+    MODEL = "claude-sonnet-4-20250514"
 
 
 SYSTEM_PROMPT = (
@@ -162,13 +187,34 @@ def _call_claude(prompt: str):
     if settings.DEMO_MODE:
         raise ValueError("DEMO_MODE: skip Claude, load fallback brief")
 
-    return client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1000,
-        temperature=0,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    if USE_OPENROUTER:
+        # OpenRouter uses OpenAI-compatible API
+        response = client.chat.completions.create(
+            model=MODEL,
+            max_tokens=1000,
+            temperature=0,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        # Convert OpenAI response format to Anthropic-compatible format
+        class TextBlock:
+            def __init__(self, text):
+                self.text = text
+        
+        class MockResponse:
+            def __init__(self, content):
+                self.content = [TextBlock(content)]
+        
+        return MockResponse(response.choices[0].message.content)
+    else:
+        # Use Anthropic API
+        return client.messages.create(
+            model=MODEL,
+            max_tokens=1000,
+            temperature=0,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": prompt}],
+        )
 
 
 def run_synthesis_agent(state: NexusState) -> dict:

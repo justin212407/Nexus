@@ -1,8 +1,8 @@
-# Zenith — Customer Escalation Intelligence Agent
+# NEXUS — Customer Escalation Intelligence Agent
 
 > **One SQL query replaces five API integrations, five auth flows, and 20 minutes of manual detective work.**
 
-![Zenith](https://img.shields.io/badge/built%20for-hackathon-purple) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi) ![LangGraph](https://img.shields.io/badge/LangGraph-1C1C1C?logo=langchain) ![Claude](https://img.shields.io/badge/Claude-Anthropic-FF6F00) ![React](https://img.shields.io/badge/React-20232A?logo=react) ![Coral](https://img.shields.io/badge/Coral%20Protocol-0A66C2)
+![Nexus](https://img.shields.io/badge/built%20for-hackathon-purple) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi) ![LangGraph](https://img.shields.io/badge/LangGraph-1C1C1C?logo=langchain) ![Claude](https://img.shields.io/badge/Claude-Anthropic-FF6F00) ![React](https://img.shields.io/badge/React-20232A?logo=react) ![Coral](https://img.shields.io/badge/Coral%20Protocol-0A66C2)
 
 ---
 
@@ -25,7 +25,7 @@ Each tool has its own API, its own auth, and its own data shape. Manual correlat
 
 ## Solution
 
-Zenith is a **5-agent sequential pipeline** that automates the entire correlation and diagnosis workflow in **under 30 seconds**:
+Nexus is a **5-agent sequential pipeline** that automates the entire correlation and diagnosis workflow in **under 30 seconds**:
 
 1. **Intercom webhook** arrives
 2. **Coral Agent** executes a single SQL JOIN across all 5 external APIs (Intercom, Sentry, Slack, GitHub, Linear) — no separate integrations needed
@@ -66,7 +66,7 @@ Webhook (Intercom)
 
 ## Impact
 
-| Metric | Before Zenith | With Zenith |
+| Metric | Before Nexus | With Nexus |
 |--------|--------------|-------------|
 | Time to diagnosis | 15–20 minutes | <30 seconds |
 | API integrations needed | 5 separate | 1 SQL query |
@@ -186,7 +186,7 @@ causal_chain:     "No technical errors detected for this user"
 dispatch:         Intercom only
 ```
 
-**Proves:** Zenith confidently distinguishes user error from real bugs, avoiding wasted engineer time.
+**Proves:** Nexus confidently distinguishes user error from real bugs, avoiding wasted engineer time.
 
 ### Scenario C — Stripe Outage
 
@@ -262,7 +262,7 @@ Hackathon project — built to demonstrate cross-source data federation with Cor
 
 ```bash
 git clone <repo-url>
-cd zenith
+cd Nexus
 uv sync
 cp .env.example .env
 ```
@@ -315,7 +315,7 @@ curl -X POST http://localhost:8000/webhook/intercom \
 ## Project Structure
 
 ```
-zenith/
+Nexus/
 ├── main.py                     # FastAPI app, startup hooks
 ├── config.py                   # Settings, env vars, DEMO_MODE flag
 ├── pyproject.toml              # Build config, dependencies

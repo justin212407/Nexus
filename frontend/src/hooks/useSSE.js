@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 export function useSSE(url) {
   const [events, setEvents] = useState([]);
   const [connected, setConnected] = useState(false);
+  const [lastError, setLastError] = useState(null);
   const esRef = useRef(null);
 
   useEffect(() => {
@@ -10,7 +11,10 @@ export function useSSE(url) {
       const es = new EventSource(url);
       esRef.current = es;
 
-      es.onopen = () => setConnected(true);
+      es.onopen = () => {
+        setConnected(true);
+        setLastError(null);
+      };
 
       es.onmessage = (e) => {
         try {
@@ -23,6 +27,7 @@ export function useSSE(url) {
 
       es.onerror = () => {
         setConnected(false);
+        setLastError("Connection lost — reconnecting...");
         es.close();
         // Auto-reconnect after 3 seconds
         setTimeout(connect, 3000);
@@ -36,5 +41,5 @@ export function useSSE(url) {
     };
   }, [url]);
 
-  return { events, connected };
+  return { events, connected, lastError };
 }

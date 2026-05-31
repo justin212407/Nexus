@@ -84,9 +84,19 @@ async function triggerScenario(scenarioKey) {
 }
 
 export default function App() {
-  const { events, connected } = useSSE("http://localhost:8000/stream");
+  const { events, connected, lastError } = useSSE(
+    "http://localhost:8000/stream",
+  );
+  const [mode, setMode] = useState(null);
   const [triggering, setTriggering] = useState(null);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/health")
+      .then((response) => response.json())
+      .then((data) => setMode(data.mode))
+      .catch(() => setMode(null));
+  }, []);
 
   // Extract selected brief from events
   const selectedBrief = selectedTicketId
@@ -124,6 +134,19 @@ export default function App() {
           >
             {connected ? "● Live" : "○ Connecting..."}
           </span>
+          {mode && (
+            <span
+              className={`text-xs px-3 py-1 rounded-full font-medium ${
+                mode === "demo"
+                  ? "bg-green-100 text-green-700 border border-green-200"
+                  : "bg-orange-100 text-orange-800 border border-orange-200"
+              }`}
+            >
+              {mode === "demo"
+                ? "⚡ DEMO MODE — Mock data active"
+                : "🔴 LIVE MODE"}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -139,6 +162,12 @@ export default function App() {
           ))}
         </div>
       </nav>
+
+      {lastError && (
+        <div className="bg-yellow-50 border-b border-yellow-200 px-6 py-2 text-xs text-yellow-700">
+          ⚠ {lastError}
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto">

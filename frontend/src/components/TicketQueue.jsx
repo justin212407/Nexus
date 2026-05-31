@@ -44,6 +44,7 @@ function ElapsedTimer({ startedAt }) {
 }
 
 function TicketRow({ ticket, expanded, onToggle, isSelected, onSelect }) {
+  const isProcessing = ticket.status === "processing";
   const statusConfig = {
     processing: {
       label: "Processing",
@@ -77,9 +78,9 @@ function TicketRow({ ticket, expanded, onToggle, isSelected, onSelect }) {
           e.stopPropagation();
           onToggle();
         }}
-        className={`w-full flex items-center justify-between px-4 py-3 transition-colors text-left ${
+        className={`w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors text-left min-h-[52px] ${
           isSelected ? "hover:bg-blue-500/20" : "hover:bg-slate-700/50"
-        }`}
+        } ${isProcessing ? "animate-pulse" : ""}`}
       >
         <div className="flex items-center gap-3">
           {config.showSpinner && (

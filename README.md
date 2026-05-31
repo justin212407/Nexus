@@ -1,106 +1,99 @@
 # Zenith — Customer Escalation Intelligence Agent
 
-> **Sequential multi-agent pipeline** that transforms incoming Intercom support tickets into structured technical diagnoses in under 30 seconds via Coral Protocol.
+> **One SQL query replaces five API integrations, five auth flows, and 20 minutes of manual detective work.**
 
-## What is Zenith?
-
-Zenith is a hackathon-built system that executes one cross-source SQL JOIN across five external APIs—Intercom, Sentry, Slack, GitHub, Linear—via **Coral Protocol**. Instead of five independent API integrations, five auth flows, and 20 minutes of manual correlation work, Zenith delivers a single structured technical diagnosis (`TechnicalBrief`) in under 30 seconds.
-
-**Core value proposition:** One SQL query replaces five API integrations, five auth implementations, and 20 minutes of manual detective work.
+![Zenith](https://img.shields.io/badge/built%20for-hackathon-purple) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi) ![LangGraph](https://img.shields.io/badge/LangGraph-1C1C1C?logo=langchain) ![Claude](https://img.shields.io/badge/Claude-Anthropic-FF6F00) ![React](https://img.shields.io/badge/React-20232A?logo=react) ![Coral](https://img.shields.io/badge/Coral%20Protocol-0A66C2)
 
 ---
 
-## Architecture Overview
+## Problem
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Webhook (Intercom)                        │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-        ┌────────────────────────────┐
-        │   Ticket Agent (SQLite)    │ ← Historical pattern lookup
-        └────────────┬───────────────┘
-                     │
-                     ▼
-        ┌────────────────────────────┐
-        │  Coral Agent (SQL JOIN)    │ ← Cross-source correlation
-        └────────────┬───────────────┘
-                     │
-                     ▼
-        ┌────────────────────────────┐
-        │   Signal Agent (Parse)     │ ← Sentry, Slack, Deploy, Linear
-        └────────────┬───────────────┘
-                     │
-                     ▼
-        ┌────────────────────────────┐
-        │ Synthesis Agent (Claude)   │ ← Generate TechnicalBrief
-        └────────────┬───────────────┘
-                     │
-                     ▼
-        ┌────────────────────────────┐
-        │  Dispatch Agent (Route)    │ ← Intercom + optional Slack
-        └────────────────────────────┘
-```
+A customer submits a support ticket: *"Checkout is broken — users cannot complete payment."*
 
-**Tech Stack:**
-- **FastAPI** — REST API & webhook handler
-- **LangGraph** — Orchestration (straight-line DAG, no branching)
-- **Anthropic Claude** — Structured synthesis & diagnosis
-- **Coral Protocol** — Unified data access layer
-- **SQLite** — Zero-config incident history
-- **React + Vite** — Live dashboard with Server-Sent Events
+To diagnose this, a support engineer must:
+
+1. **Check Sentry** — Are there recent errors?
+2. **Check Slack** — Are engineers discussing an incident?
+3. **Check GitHub** — Was there a recent deploy?
+4. **Check Linear** — Is there an existing bug ticket?
+5. **Check Intercom** — How many customers are affected?
+6. **Correlate timestamps** — Do the events line up?
+
+Each tool has its own API, its own auth, and its own data shape. Manual correlation takes **15–20 minutes** per escalation. Most teams don't have this time, so diagnostics get skipped and engineers waste hours hunting context.
 
 ---
 
-## Quick Start
+## Solution
 
-### Prerequisites
+Zenith is a **5-agent sequential pipeline** that automates the entire correlation and diagnosis workflow in **under 30 seconds**:
 
-- Python 3.11+
-- `uv` package manager (https://astral.sh/uv) — or pip
-- Anthropic API key
-- Internet access (for Coral Protocol)
+1. **Intercom webhook** arrives
+2. **Coral Agent** executes a single SQL JOIN across all 5 external APIs (Intercom, Sentry, Slack, GitHub, Linear) — no separate integrations needed
+3. **Signal Agent** transforms raw query results into typed, structured signals
+4. **Synthesis Agent** (Claude) produces a `TechnicalBrief` — root cause, confidence score, severity, causal chain, and recommended action
+5. **Dispatch Agent** routes the brief to Intercom (internal note) and optionally Slack (escalation) based on confidence and severity thresholds
 
-### Setup
+```
+Webhook (Intercom)
+       │
+       ▼
+┌──────────────────┐
+│  Ticket Agent    │  ← Historical pattern lookup (SQLite)
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Coral Agent     │  ← Cross-source SQL JOIN (5 APIs in one query)
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Signal Agent    │  ← Parse into typed signals (Sentry, Slack, Deploy, Linear)
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│ Synthesis Agent  │  ← Claude generates TechnicalBrief
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Dispatch Agent  │  ← Route to Intercom + optional Slack
+└──────────────────┘
+```
 
-1. **Clone and navigate:**
-   ```bash
-   git clone <repo-url>
-   cd zenith
-   ```
+---
 
-2. **Install dependencies:**
-   ```bash
-   uv sync  # or: uv pip install -r requirements.txt
-   ```
+## Impact
 
-3. **Create environment file:**
-   ```bash
-   cp .env.example .env
-   ```
+| Metric | Before Zenith | With Zenith |
+|--------|--------------|-------------|
+| Time to diagnosis | 15–20 minutes | <30 seconds |
+| API integrations needed | 5 separate | 1 SQL query |
+| Auth implementations | 5 | 1 (Coral) |
+| Demo setup time | Hours (api keys, config) | 5 minutes (DEMO_MODE) |
+| Classification outcomes | Manual guesswork | Structured (known_bug, user_error, external_dependency) |
 
-4. **Configure `.env`:**
-   ```
-   ANTHROPIC_API_KEY=sk-...
-   DEMO_MODE=true        # Set to true for demo/testing
-   CONFIDENCE_THRESHOLD=70
-   DATABASE_URL=sqlite:///nexus.db
-   ```
+---
 
-5. **Run the server:**
-   ```bash
-   uvicorn main:app --reload
-   ```
+## Tech Stack
 
-   Server runs on `http://localhost:8000`
+| Layer | Technology | Role |
+|-------|-----------|------|
+| **Data Federation** | Coral Protocol | Single SQL query across 5 external APIs |
+| **Orchestration** | LangGraph | Typed, sequential 5-agent pipeline |
+| **LLM** | Anthropic Claude | Root cause classification + structured diagnosis |
+| **Backend** | FastAPI | Async webhook handler, REST API, SSE streaming |
+| **Storage** | SQLite | Zero-config incident history |
+| **Frontend** | React + Vite | Live dashboard with Server-Sent Events |
 
 ---
 
 ## Key Features
 
-### 1. **Coral Protocol Data Layer**
-The only way to access external data. No direct HTTP calls to Sentry, Slack, GitHub, Linear.
+### 1. Coral Protocol — One Query, Five APIs
+
+No direct HTTP calls to Sentry, Slack, GitHub, or Linear. A single `coral_query()` with 5 LEFT JOINs replaces five separate integrations, auth flows, and data transformations.
 
 ```python
 from coral.client import coral_query
@@ -109,8 +102,15 @@ rows = coral_query(sql=MASTER_QUERY, params={"ticket_id": ticket_id})
 # Returns: list[dict] with aligned columns from all 5 sources
 ```
 
-### 2. **Typed State Management (LangGraph)**
-Each agent writes exactly one state key — no conflicts, no mutations.
+Each JOIN condition encodes a business rule:
+- Sentry: errors within `-2h / +30m` of ticket
+- Slack: incident discussions within `-4h`
+- GitHub: deploy activity within `-6h`
+- Linear: fuzzy title match (engineers don't quote exception class names)
+
+### 2. LangGraph Typed Pipeline
+
+Each agent writes exactly one state key — zero conflicts, no mutation surprises.
 
 ```python
 class NexusState(TypedDict):
@@ -124,17 +124,9 @@ class NexusState(TypedDict):
     dispatched:    bool               # Written by: dispatch_agent
 ```
 
-### 3. **DEMO_MODE for Bulletproof Demos**
-Never call real APIs on stage. Every code path checks `settings.DEMO_MODE` and uses fixture JSON instead.
+### 3. Structured LLM Output (Pydantic Guardrails)
 
-```python
-if settings.DEMO_MODE:
-    from coral.mock_client import mock_query
-    return mock_query(params)  # Returns deterministic fixture
-```
-
-### 4. **Structured LLM Output (Pydantic Validation)**
-Claude's output is never trusted raw. Always parsed through `TechnicalBrief(**parsed)`.
+Claude's output is never trusted raw. Always parsed and validated through `TechnicalBrief(**parsed)` — ensures every diagnosis has the correct schema, types, and enumerated values.
 
 ```python
 from models.brief import TechnicalBrief
@@ -142,8 +134,19 @@ from models.brief import TechnicalBrief
 brief = TechnicalBrief(**claude_response)  # ValidationError on schema mismatch
 ```
 
-### 5. **Webhook + Background Tasks**
-Intercom has a 10s response timeout. Pipeline runs async in `BackgroundTasks`.
+### 4. DEMO_MODE — Bulletproof Demos
+
+Every external call path checks `settings.DEMO_MODE` and returns deterministic fixture JSON instead. No API keys, no network flakiness, no stage fright.
+
+```python
+if settings.DEMO_MODE:
+    from coral.mock_client import mock_query
+    return mock_query(params)  # Returns deterministic fixture
+```
+
+### 5. Async Webhook with Background Tasks
+
+Intercom enforces a 10-second response timeout. The pipeline runs asynchronously via `BackgroundTasks`, returning `200` immediately and streaming progress to the dashboard via Server-Sent Events.
 
 ```python
 @router.post("/webhook/intercom")
@@ -151,6 +154,140 @@ async def webhook(request: Request, background_tasks: BackgroundTasks):
     background_tasks.add_task(run_pipeline, ticket)
     return {"status": "accepted"}  # Returns 200 immediately
 ```
+
+---
+
+## Demo Scenarios
+
+Three deterministic narratives built into mock fixtures — no live API access needed. Each demonstrates a different classification outcome.
+
+### Scenario A — Checkout Bug
+
+Real incident with full signal fire. Deploy at 14:18, NullPointerException at 14:21 (+3 min), engineer Slack discussions at 14:23, customer ticket at 14:38. Linear issue LIN-2847 already created.
+
+```
+root_cause:       "known_bug"
+confidence_pct:   ≥88
+severity:         "high"
+dispatch:         Intercom only (confidence ≥70, severity not critical)
+```
+
+**Proves:** End-to-end correlation across all 4 signal types in under 30 seconds.
+
+### Scenario B — False Alarm
+
+All signals return null. No Sentry error, no Slack thread, no deploy, no Linear issue. Customer simply cannot log in.
+
+```
+root_cause:       "user_error"
+confidence_pct:   ≥88
+severity:         "low"
+causal_chain:     "No technical errors detected for this user"
+dispatch:         Intercom only
+```
+
+**Proves:** Zenith confidently distinguishes user error from real bugs, avoiding wasted engineer time.
+
+### Scenario C — Stripe Outage
+
+No internal errors. No recent deploy. No Slack thread. But 50+ tickets on payment keyword pattern indicate an external dependency issue.
+
+```
+root_cause:       "external_dependency"
+affected_service: "payment-gateway"
+causal_chain:     "Third-party dependency (Stripe) showing degradation"
+dispatch:         Intercom + Slack (severity=critical triggers escalation)
+```
+
+**Proves:** Pattern recognition across ticket volume + confidence-gated escalation routing.
+
+---
+
+## Challenges Overcome
+
+### 1. Domain-Modelling the JOIN Windows
+
+The Coral JOIN time offsets aren't arbitrary — each encodes a business rule:
+- **Sentry:** `-2h / +30m` — customers don't report bugs the instant they happen
+- **Slack:** `-4h` — engineers see issues in monitoring before customers do
+- **GitHub:** `-6h` — deploy-induced regressions surface slowly
+- **Linear:** Fuzzy match — engineer-written titles don't quote exception class names
+
+Wrong windows → missed correlations → bad diagnoses.
+
+### 2. Reliable Structured Output from Claude
+
+Getting Claude to return valid, typed JSON every time requires adversarial prompt design:
+- Enumerate every key with its type
+- Specify enumerated values for categorical fields (`root_cause`, `severity`)
+- Instruct Claude to return `null` (not empty string) for unknown values
+- Forbid markdown code fences
+
+Pydantic validation + 1 retry catches the remaining edge cases.
+
+### 3. Async Pipeline with a Synchronous Bottleneck
+
+Coral runs as a blocking subprocess in FastAPI's async event loop. In live mode, a slow Coral query blocks the event loop for up to 30 seconds. Solution: `ThreadPoolExecutor` for production; `DEMO_MODE` returns in milliseconds for demos.
+
+### 4. Signal Transformation as a Reliability Layer
+
+Raw Coral rows are untyped `dict`. The `SignalAgent` converts them to typed dataclasses with `found: bool`. This prevents Claude from hallucinating around null values and forces explicit handling in both the prompt and dispatch logic.
+
+---
+
+## Roadmap
+
+- **ThreadPoolExecutor** for Coral subprocess in live mode
+- **Redis pub/sub** for multi-instance SSE broadcasting
+- **More signal sources** — Datadog, PagerDuty, AWS CloudWatch
+- **Automated self-healing** — rollback deploy, restart service, post status page update
+
+---
+
+## Built For
+
+Hackathon project — built to demonstrate cross-source data federation with Coral Protocol, structured LLM output, and confidence-gated routing in a real-world support workflow.
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.11+
+- `uv` package manager ([astral.sh/uv](https://astral.sh/uv)) — or pip
+- Anthropic API key
+
+### Setup
+
+```bash
+git clone <repo-url>
+cd zenith
+uv sync
+cp .env.example .env
+```
+
+Configure `.env`:
+```
+ANTHROPIC_API_KEY=sk-...
+DEMO_MODE=true
+```
+
+```bash
+uvicorn main:app --reload
+```
+
+Server runs on `http://localhost:8000`
+
+### Frontend Dashboard
+
+```bash
+cd frontend
+npm install
+npm run dev   # Starts on http://localhost:5173
+```
+
+**Features:** TicketQueue (live tickets with SSE), TechnicalBrief (causal chain + confidence), MetricsBar (real-time classification), AgentStatus (5-step pipeline progress)
 
 ---
 
@@ -164,7 +301,7 @@ async def webhook(request: Request, background_tasks: BackgroundTasks):
 | `/stats` | GET | Classification breakdown (root_cause, severity counts) |
 | `/stream` | GET | Server-Sent Events (real-time pipeline progress) |
 
-### Example: Trigger via cURL (demo mode)
+### Demo Trigger
 
 ```bash
 curl -X POST http://localhost:8000/webhook/intercom \
@@ -175,49 +312,6 @@ curl -X POST http://localhost:8000/webhook/intercom \
 
 ---
 
-## Demo Scenarios
-
-Three deterministic narratives built into mock fixtures:
-
-### Scenario A — Checkout Bug
-**All 4 signals fire.** Deploy at 14:18, NullPointerException at 14:21 (+3 min), engineer mentions in Slack at 14:23, customer ticket at 14:38. Linear issue LIN-2847 already created.
-
-```
-root_cause:     "known_bug"
-confidence_pct: ≥88
-severity:       "high"
-dispatch:       Intercom only (confidence ≥70, severity not critical)
-```
-
-**File:** `mock_data/coral_result_a.json`
-
-### Scenario B — False Alarm
-**All values null.** No Sentry error, no Slack thread, no deploy, no Linear issue. Customer cannot log in.
-
-```
-root_cause:     "user_error"
-confidence_pct: ≥88
-severity:       "low"
-causal_chain:   "No technical errors detected for this user"
-dispatch:       Intercom only
-```
-
-**File:** `mock_data/coral_result_b.json`
-
-### Scenario C — Stripe Outage
-**No internal errors.** No recent deploy. No Slack thread. 50 tickets on payment keyword pattern.
-
-```
-root_cause:     "external_dependency"
-affected_service: "payment-gateway"
-causal_chain:   "Third-party dependency (Stripe) showing degradation"
-dispatch:       Intercom + Slack (confidence <70 OR severity="high")
-```
-
-**File:** `mock_data/coral_result_c.json`
-
----
-
 ## Project Structure
 
 ```
@@ -225,7 +319,6 @@ zenith/
 ├── main.py                     # FastAPI app, startup hooks
 ├── config.py                   # Settings, env vars, DEMO_MODE flag
 ├── pyproject.toml              # Build config, dependencies
-├── requirements.txt            # Pinned deps
 │
 ├── agents/                     # One agent per file. No cross-imports.
 │   ├── ticket_agent.py         # SQLite history lookup
@@ -234,7 +327,7 @@ zenith/
 │   ├── synthesis_agent.py      # Claude → TechnicalBrief (validated)
 │   └── dispatch_agent.py       # Route → Intercom + optional Slack
 │
-├── models/                     # Data contracts (locked Day 1)
+├── models/                     # Data contracts
 │   ├── ticket.py               # TicketContext
 │   ├── signals.py              # SentrySignal, SlackSignal, DeploySignal, LinearSignal
 │   └── brief.py                # TechnicalBrief (Pydantic)
@@ -280,92 +373,7 @@ zenith/
 
 ---
 
-## Absolute Rules (Do Not Violate)
-
-1. **Coral is the only data access layer.** No agent makes direct HTTP calls.
-2. **DEMO_MODE is sacred.** Check `settings.DEMO_MODE` before any external API call.
-3. **One writer per state key.** Each NexusState key is written by exactly one agent.
-4. **Typed over untyped.** Never pass raw `dict` or `None` to Claude.
-5. **Pydantic validates all LLM output.** Always parse through `TechnicalBrief(**parsed)`.
-6. **Sequential pipeline, no parallel branches.** Straight line: ticket → coral → signal → synthesis → dispatch.
-7. **Return 200 immediately from webhook.** Use `BackgroundTasks.add_task()`.
-8. **Fixtures tell the demo story.** Do not overwrite mock data column names.
-
----
-
-## Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Verbose output
-pytest -v
-
-# Run a specific file
-pytest tests/test_signal_agent.py
-
-# Watch mode
-pytest-watch tests/
-```
-
----
-
-## Development Workflow
-
-### 1. Validate Gates (Before Deploying)
-
-```bash
-# Gate 1: Server starts
-uvicorn main:app 2>&1 | grep "Uvicorn running"
-
-# Gate 2: Pydantic validation works
-python -c "from models.brief import TechnicalBrief; TechnicalBrief(root_cause='bad')"
-
-# Gate 3: Coral mock returns correct columns
-python -c "from coral.client import coral_query; print(list(coral_query('SELECT 1', {'ticket_id':'ticket_checkout'})[0].keys()))"
-
-# Gate 6: Graph invocation works end-to-end
-python -c "from pipeline.graph import nexus_graph; ..."
-
-# Gate 7: Webhook accepts demo
-curl -X POST /webhook/intercom -H "X-Hub-Signature-256: sha256=demo_bypass" ...
-```
-
-### 2. Debug a Signal
-
-```python
-# In ipython or a test file:
-from coral.client import coral_query
-from agents.signal_agent import run_signal_agent
-from pipeline.state import NexusState
-
-rows = coral_query("SELECT * FROM ...", {"ticket_id": "ticket_checkout"})
-state = NexusState(
-    ticket=...,
-    result_set=rows,
-    ...
-)
-signals = run_signal_agent(state)
-print(signals)  # See all signals populated
-```
-
-### 3. Test Claude Output Parsing
-
-```python
-from models.brief import TechnicalBrief
-import json
-
-raw_response = '{"root_cause": "known_bug", "confidence_pct": 88, ...}'
-brief = TechnicalBrief(**json.loads(raw_response))
-print(brief.root_cause)  # Pydantic coerces & validates
-```
-
----
-
 ## Environment Variables
-
-All `DEMO_MODE=true` disables live API calls. Full reference in `config.py`:
 
 | Variable | Required | Default | Notes |
 |----------|----------|---------|-------|
@@ -383,77 +391,22 @@ All `DEMO_MODE=true` disables live API calls. Full reference in `config.py`:
 
 ---
 
-## Coral Protocol Setup (Live Mode Only)
+## Running Tests
 
 ```bash
-brew install withcoral/tap/coral   # macOS
-# or: cargo install coral-cli      # From source
-
-coral source add intercom          # Interactive setup
-coral source add sentry
-coral source add slack
-coral source add github
-coral source add linear
-
-coral source list                  # Verify all green
-coral sql "SELECT * FROM sentry.issues LIMIT 1"  # Smoke test
+pytest          # All tests
+pytest -v       # Verbose
+pytest tests/test_signal_agent.py  # Specific file
 ```
-
----
-
-## Frontend Dashboard
-
-Located in `/frontend`. Requires Node.js 18+.
-
-```bash
-cd frontend
-npm install
-npm run dev   # Starts on http://localhost:5173
-```
-
-**Features:**
-- **TicketQueue** — Live incoming tickets with SSE updates
-- **TechnicalBrief** — Card display: causal chain timeline, confidence pill, recommendation
-- **MetricsBar** — Real-time classification breakdown
-- **AgentStatus** — 5-step pipeline progress visualization
-
----
-
-## Common Issues & Troubleshooting
-
-### 1. **"ModuleNotFoundError: No module named 'coral'"**
-   - Coral CLI not installed or not in PATH
-   - Run `coral --version` to verify installation
-   - Add to PATH if needed
-
-### 2. **Claude returns invalid JSON**
-   - Check `temperature` in `synthesis_agent.py` — must be 0 for determinism
-   - Verify `SYSTEM_PROMPT` includes "respond ONLY with JSON"
-   - Retry logic will attempt 2 calls before fallback
-
-### 3. **SQLite "database is locked"**
-   - Only one writer at a time
-   - Use `get_session()` context manager
-   - Check for long-running transactions
-
-### 4. **SSE events not arriving at dashboard**
-   -Verify `X-Accel-Buffering: no` header in `stream.py`
-   - Nginx may buffer responses without this
-   - Each event must include `ticket_id` for routing
-
-### 5. **Webhook returns 400: Invalid HMAC**
-   - Verify `INTERCOM_WEBHOOK_SECRET` in `.env` matches Intercom dashboard
-   - For demo, use `X-Hub-Signature-256: sha256=demo_bypass`
 
 ---
 
 ## Contributing
 
-1. **Respect the rules** (see "Absolute Rules" section above)
-2. **Add tests** for new agents or signal types
-3. **Update `CONTEXT.md`** if domain language changes
-4. **Keep DEMO_MODE working** — always test with fixtures first
-5. **One agent per file** — no cross-imports between agents
+1. **Coral is the only data access layer** — no agent makes direct HTTP calls
+2. **DEMO_MODE must always work** — test with fixtures before any change
+3. **One agent per file** — no cross-imports between agents
+4. **Tests required** for new agents or signal types
 
 ---
 
@@ -463,17 +416,4 @@ MIT
 
 ---
 
-## Contact & Feedback
-
-Built as a hackathon project. For questions or feedback, open an issue on GitHub.
-
-**Key documentation:**
-- [01_ARCHITECTURE.md](docs/01_ARCHITECTURE.md)
-- [02_AGENT_PIPELINE.md](docs/02_AGENT_PIPELINE.md)
-- [03_CORAL_DATA_LAYER.md](docs/03_CORAL_DATA_LAYER.md)
-- [04_API_COMPLEXITY.md](docs/04_API_COMPLEXITY.md)
-- [05_STRUCTURE_SETUP.md](docs/05_STRUCTURE_SETUP.md)
-
----
-
-**Last updated:** May 19, 2026
+**Last updated:** May 31, 2026

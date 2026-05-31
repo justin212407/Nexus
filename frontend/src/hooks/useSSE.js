@@ -27,7 +27,7 @@ export function useSSE(url) {
 
       es.onerror = () => {
         setConnected(false);
-        setLastError("Connection lost — reconnecting...");
+        setLastError("Connection lost");
         es.close();
         // Auto-reconnect after 3 seconds
         setTimeout(connect, 3000);

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./MetricsBar.css";
 
 export default function MetricsBar({ events }) {
   const [stats, setStats] = useState({
@@ -62,10 +61,15 @@ export default function MetricsBar({ events }) {
     });
   }, [events]);
 
-  if (loading) return <div className="metrics-bar">Loading metrics...</div>;
+  if (loading)
+    return (
+      <div style={{ color: "#888", padding: "12px" }}>Loading metrics...</div>
+    );
   if (error)
     return (
-      <div className="metrics-bar error">Failed to load stats: {error}</div>
+      <div style={{ color: "#ef4444", padding: "12px" }}>
+        Failed to load stats: {error}
+      </div>
     );
 
   const breakdown = stats.classification_breakdown || {};
@@ -96,41 +100,106 @@ export default function MetricsBar({ events }) {
   });
 
   return (
-    <div className="metrics-bar">
-      <div className="metrics-header">
-        <h3>Incidents Today: {total}</h3>
-        <span className="avg-confidence">Avg Confidence: {avgConfidence}%</span>
-        <span className="top-service">Top Service: {topService}</span>
+    <div style={{ color: "#ddd", fontSize: 13 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          marginBottom: 12,
+        }}
+      >
+        <div style={{ fontWeight: 700, color: "#888" }}>
+          Incidents Today: <span style={{ color: "#fff" }}>{total}</span>
+        </div>
+        <div style={{ color: "#888" }}>
+          Avg Confidence:{" "}
+          <span style={{ color: "#fff", fontWeight: 700 }}>
+            {avgConfidence}%
+          </span>
+        </div>
+        <div style={{ color: "#888" }}>
+          Top:{" "}
+          <span
+            style={{
+              color: "#fff",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "80px",
+              display: "inline-block",
+              verticalAlign: "bottom",
+            }}
+          >
+            {topService}
+          </span>
+        </div>
       </div>
 
-      <div className="breakdown-bar">
+      <div
+        style={{
+          height: 12,
+          background: "#111",
+          border: "1px solid #1a1a1a",
+          borderRadius: 8,
+          overflow: "hidden",
+          display: "flex",
+        }}
+      >
         {segments
           .filter((s) => s.count > 0)
           .map((seg) => (
             <div
               key={seg.cat}
-              className="segment"
+              title={`${seg.cat}: ${seg.count} (${seg.pct}%)`}
               style={{
                 width: `${seg.pct}%`,
-                backgroundColor: seg.color,
+                background: seg.color,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-              title={`${seg.cat}: ${seg.count} (${seg.pct}%)`}
             >
-              {seg.pct > 5 && <span className="label">{seg.cat}</span>}
+              {seg.pct > 15 && (
+                <span
+                  style={{ fontSize: 11, color: "#0a0a0a", fontWeight: 700 }}
+                >
+                  {seg.pct}%
+                </span>
+              )}
             </div>
           ))}
       </div>
 
-      <div className="legend">
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          marginTop: 12,
+        }}
+      >
         {segments.map((seg) => (
-          <div key={seg.cat} className="legend-item">
+          <div
+            key={seg.cat}
+            style={{ display: "flex", alignItems: "center", gap: 8 }}
+          >
             <div
-              className="legend-color"
-              style={{ backgroundColor: seg.color }}
-            ></div>
-            <span>
-              {seg.cat}: {seg.count}
-            </span>
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 3,
+                background: seg.color,
+              }}
+            />
+            <div style={{ color: "#888" }}>
+              {seg.cat}:{" "}
+              <span style={{ color: "#fff", fontWeight: 700 }}>
+                {" "}
+                {seg.count}
+              </span>
+            </div>
           </div>
         ))}
       </div>

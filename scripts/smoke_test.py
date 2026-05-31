@@ -4,10 +4,14 @@
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 os.environ.setdefault("DEMO_MODE", "true")
 
-from pipeline.graph import build_graph
+from pipeline.graph import nexus_graph
 from models.ticket import TicketContext
 from db.session import init_db
 
@@ -44,7 +48,7 @@ def run_scenario(g, label, ticket_id, email, body, priority, expect_root_cause, 
 
 def main():
     init_db()
-    g = build_graph()
+    g = nexus_graph
     all_checks = []
 
     all_checks += run_scenario(g,

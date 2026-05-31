@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TicketQueue from "./components/TicketQueue";
+import TechnicalBrief from "./components/TechnicalBrief";
+import AgentStatus from "./components/AgentStatus";
+import MetricsBar from "./components/MetricsBar";
 import { useSSE } from "./hooks/useSSE";
 
 const SCENARIOS = {
@@ -11,13 +14,15 @@ const SCENARIOS = {
         item: {
           id: `ticket_checkout_${Date.now()}`,
           user: { email: "customer@example.com" },
-          conversation_message: { body: "Checkout is completely broken, users cannot complete payment" },
+          conversation_message: {
+            body: "Checkout is completely broken, users cannot complete payment",
+          },
           created_at: new Date().toISOString().slice(0, 19),
           priority: "urgent",
-          tags: { tags: [] }
-        }
-      }
-    }
+          tags: { tags: [] },
+        },
+      },
+    },
   },
   false_alarm: {
     label: "🟡 False Alarm",
@@ -27,13 +32,15 @@ const SCENARIOS = {
         item: {
           id: `ticket_false_${Date.now()}`,
           user: { email: "confused@example.com" },
-          conversation_message: { body: "I cannot log in but I think I forgot my password" },
+          conversation_message: {
+            body: "I cannot log in but I think I forgot my password",
+          },
           created_at: new Date().toISOString().slice(0, 19),
           priority: "normal",
-          tags: { tags: [] }
-        }
-      }
-    }
+          tags: { tags: [] },
+        },
+      },
+    },
   },
   stripe_outage: {
     label: "🟠 Stripe Outage",
@@ -43,14 +50,16 @@ const SCENARIOS = {
         item: {
           id: `ticket_stripe_${Date.now()}`,
           user: { email: "enterprise@example.com" },
-          conversation_message: { body: "All payment processing is failing, Stripe returning 503 errors" },
+          conversation_message: {
+            body: "All payment processing is failing, Stripe returning 503 errors",
+          },
           created_at: new Date().toISOString().slice(0, 19),
           priority: "urgent",
-          tags: { tags: [] }
-        }
-      }
-    }
-  }
+          tags: { tags: [] },
+        },
+      },
+    },
+  },
 };
 
 async function triggerScenario(scenarioKey) {
@@ -77,6 +86,14 @@ async function triggerScenario(scenarioKey) {
 export default function App() {
   const { events, connected } = useSSE("http://localhost:8000/stream");
   const [triggering, setTriggering] = useState(null);
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+
+  // Extract selected brief from events
+  const selectedBrief = selectedTicketId
+    ? events.find(
+        (e) => e.event === "completed" && e.ticket_id === selectedTicketId,
+      )?.brief || null
+    : null;
 
   const handleTrigger = async (key) => {
     setTriggering(key);
@@ -85,13 +102,26 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold text-gray-900">NEXUS</h1>
-          <span className={`text-xs px-2 py-1 rounded-full ${
-            connected ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
-          }`}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+      {/* Header */}
+      <nav className="bg-black/50 border-b border-slate-700 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">
+              Z
+            </div>
+            <h1 className="text-xl font-bold tracking-tight">NEXUS</h1>
+          </div>
+          <span
+            className="text-xs px-3 py-1 rounded-full border"
+            style={{
+              borderColor: connected ? "#10b981" : "#6b7280",
+              backgroundColor: connected
+                ? "rgba(16, 185, 129, 0.1)"
+                : "rgba(107, 114, 128, 0.1)",
+              color: connected ? "#10b981" : "#9ca3af",
+            }}
+          >
             {connected ? "● Live" : "○ Connecting..."}
           </span>
         </div>
@@ -102,7 +132,7 @@ export default function App() {
               key={key}
               onClick={() => handleTrigger(key)}
               disabled={triggering === key}
-              className="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors font-medium"
+              className="text-xs px-3 py-2 border border-slate-600 rounded-lg hover:bg-slate-700 disabled:opacity-50 transition-all font-medium hover:border-slate-500"
             >
               {triggering === key ? "Sending..." : scenario.label}
             </button>
@@ -110,14 +140,45 @@ export default function App() {
         </div>
       </nav>
 
-      <div className="max-w-3xl mx-auto px-6 py-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-            Live Ticket Queue
-          </h2>
-          <span className="text-xs text-gray-400">{events.length} events received</span>
+      {/* Main Content */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto">
+        {/* Left Column: Ticket Queue */}
+        <div className="md:col-span-1">
+          <div className="sticky top-24">
+            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+              Tickets ({events.filter((e) => e.event === "started").length})
+            </h2>
+            <TicketQueue
+              events={events}
+              onSelectTicket={setSelectedTicketId}
+              selectedTicketId={selectedTicketId}
+            />
+          </div>
         </div>
-        <TicketQueue events={events} />
+
+        {/* Middle Column: Technical Brief + Agent Status */}
+        <div className="md:col-span-1 space-y-6">
+          {selectedTicketId ? (
+            <>
+              <AgentStatus events={events} ticketId={selectedTicketId} />
+              <TechnicalBrief brief={selectedBrief} />
+            </>
+          ) : (
+            <div className="rounded-xl border border-slate-700 bg-slate-800/50 p-8 text-center text-slate-400">
+              <p className="text-sm">Select a ticket to view details</p>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Metrics */}
+        <div className="md:col-span-1">
+          <div className="sticky top-24">
+            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+              Analytics
+            </h2>
+            <MetricsBar events={events} />
+          </div>
+        </div>
       </div>
     </div>
   );

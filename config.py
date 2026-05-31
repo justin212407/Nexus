@@ -4,7 +4,9 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     # -- LLM --
     # Required in all modes. The only API called during DEMO_MODE.
-    ANTHROPIC_API_KEY: str
+    # Use either ANTHROPIC_API_KEY or OPENROUTER_API_KEY
+    ANTHROPIC_API_KEY: str = ""
+    OPENROUTER_API_KEY: str = ""
 
     # -- Intercom --
     # Required for live dispatch. Not needed when DEMO_MODE=true.

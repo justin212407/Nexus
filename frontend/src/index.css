@@ -9,7 +9,9 @@
 
 body {
   @apply bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", sans-serif;
 }
 
 /* Scrollbar styling */

@@ -23,16 +23,19 @@ npm run dev
 **Story:** A customer reports "Checkout is broken — users cannot complete payment." Zenith correlates this to a recent production deploy + NullPointerException in Sentry.
 
 ### Step 1: Trigger Event
+
 Click **🔴 Checkout Bug** button in the dashboard header.
 
 ### What to Watch
 
 **Real-time UI updates:**
+
 1. Card appears in **Tickets** column with status "Processing"
 2. **Agent Status** shows pipeline: Ticket Received → Coral Query → Signal Transform → Claude Analysis → Completed
 3. Each step completes within 1–2s
 
 **After ~5–8 seconds:**
+
 - Status changes to "Done" (green)
 - **TechnicalBrief** card populates:
   - **Root Cause:** Known Bug (red pill)
@@ -47,10 +50,12 @@ Click **🔴 Checkout Bug** button in the dashboard header.
   - **Affected Users:** 247
 
 **Dispatch:**
+
 - Intercom internal note created (confidence ≥70, no Slack escalation needed)
 - **Analytics** panel updates: root_cause count +1
 
 **Value Prop Demonstrated:**
+
 - Single Coral query correlated 4 data sources (Sentry, Slack, GitHub, Linear) in <1s
 - Claude classified root cause + confidence in <5s
 - Manual correlation would take 15-20 minutes
@@ -62,11 +67,13 @@ Click **🔴 Checkout Bug** button in the dashboard header.
 **Story:** Customer says "I cannot log in" but Zenith detects user error (likely forgot password).
 
 ### Step 1: Trigger Event
+
 Click **🟡 False Alarm** button.
 
 ### What to Watch
 
 **After ~5–8 seconds:**
+
 - Status: "Done"
 - **TechnicalBrief** shows:
   - **Root Cause:** User Error (blue pill)
@@ -77,9 +84,11 @@ Click **🟡 False Alarm** button.
   - **Draft Customer Response:** Empathetic, non-technical guidance on password recovery
 
 **Dispatch:**
+
 - Intercom note only (no Slack — confidence high, severity low)
 
 **Value Prop Demonstrated:**
+
 - Zenith confidently distinguishes user error from bugs
 - Avoids wasting engineer time on non-technical issues
 - Suggests self-service path for customers
@@ -91,11 +100,13 @@ Click **🟡 False Alarm** button.
 **Story:** Multiple customers report payment failures. Zenith identifies external dependency (Stripe API degradation).
 
 ### Step 1: Trigger Event
+
 Click **🟠 Stripe Outage** button.
 
 ### What to Watch
 
 **After ~5–8 seconds:**
+
 - Status: "Done"
 - **TechnicalBrief** shows:
   - **Root Cause:** External Dependency (purple pill)
@@ -110,10 +121,12 @@ Click **🟠 Stripe Outage** button.
   - **Recommended Action:** "Contact Stripe support; monitor status page. Customers can retry after 15 min."
 
 **Dispatch:**
+
 - **Both Intercom AND Slack** (severity=critical triggers escalation)
 - Slack message includes severity badge (red) + causal chain for on-call engineer
 
 **Value Prop Demonstrated:**
+
 - Zenith recognizes external dependency patterns
 - Escalates appropriately (severity trumps confidence)
 - Provides context for on-call team to act fast
@@ -151,19 +164,20 @@ This confirms metrics updated in real-time across all dispatches.
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Frontend won't load | Check: `http://localhost:5173` + browser console for errors. Restart Vite. |
-| Backend 500 error | Check `DEMO_MODE=true` is set. Verify Python env activated (should show `(env1)` prompt). |
-| No SSE events arriving | Open browser DevTools → Network → filter "stream". Should see SSE connection. If not, check CORS headers in main.py. |
-| Ticket card stuck on "Processing" | Backend may have crashed. Check terminal 1 for exceptions. Common: missing env var. |
-| Linear issue link broken | This is expected in DEMO_MODE (fixture issues don't exist in real Linear). In live mode, it will link correctly. |
+| Issue                             | Solution                                                                                                             |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Frontend won't load               | Check: `http://localhost:5173` + browser console for errors. Restart Vite.                                           |
+| Backend 500 error                 | Check `DEMO_MODE=true` is set. Verify Python env activated (should show `(env1)` prompt).                            |
+| No SSE events arriving            | Open browser DevTools → Network → filter "stream". Should see SSE connection. If not, check CORS headers in main.py. |
+| Ticket card stuck on "Processing" | Backend may have crashed. Check terminal 1 for exceptions. Common: missing env var.                                  |
+| Linear issue link broken          | This is expected in DEMO_MODE (fixture issues don't exist in real Linear). In live mode, it will link correctly.     |
 
 ---
 
 ## Live Mode Setup (Out of Scope for This Demo)
 
 For judges interested in live mode, see [07_LIVE_MODE_SETUP.md](07_LIVE_MODE_SETUP.md). Live mode requires:
+
 - Sentry API token (org slug)
 - Slack bot token + channel ID
 - GitHub personal access token

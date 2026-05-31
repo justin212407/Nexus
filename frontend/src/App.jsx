@@ -14,13 +14,15 @@ const SCENARIOS = {
         item: {
           id: `ticket_checkout_${Date.now()}`,
           user: { email: "customer@example.com" },
-          conversation_message: { body: "Checkout is completely broken, users cannot complete payment" },
+          conversation_message: {
+            body: "Checkout is completely broken, users cannot complete payment",
+          },
           created_at: new Date().toISOString().slice(0, 19),
           priority: "urgent",
-          tags: { tags: [] }
-        }
-      }
-    }
+          tags: { tags: [] },
+        },
+      },
+    },
   },
   false_alarm: {
     label: "🟡 False Alarm",
@@ -30,13 +32,15 @@ const SCENARIOS = {
         item: {
           id: `ticket_false_${Date.now()}`,
           user: { email: "confused@example.com" },
-          conversation_message: { body: "I cannot log in but I think I forgot my password" },
+          conversation_message: {
+            body: "I cannot log in but I think I forgot my password",
+          },
           created_at: new Date().toISOString().slice(0, 19),
           priority: "normal",
-          tags: { tags: [] }
-        }
-      }
-    }
+          tags: { tags: [] },
+        },
+      },
+    },
   },
   stripe_outage: {
     label: "🟠 Stripe Outage",
@@ -46,14 +50,16 @@ const SCENARIOS = {
         item: {
           id: `ticket_stripe_${Date.now()}`,
           user: { email: "enterprise@example.com" },
-          conversation_message: { body: "All payment processing is failing, Stripe returning 503 errors" },
+          conversation_message: {
+            body: "All payment processing is failing, Stripe returning 503 errors",
+          },
           created_at: new Date().toISOString().slice(0, 19),
           priority: "urgent",
-          tags: { tags: [] }
-        }
-      }
-    }
-  }
+          tags: { tags: [] },
+        },
+      },
+    },
+  },
 };
 
 async function triggerScenario(scenarioKey) {
@@ -84,7 +90,9 @@ export default function App() {
 
   // Extract selected brief from events
   const selectedBrief = selectedTicketId
-    ? events.find(e => e.event === "completed" && e.ticket_id === selectedTicketId)?.brief || null
+    ? events.find(
+        (e) => e.event === "completed" && e.ticket_id === selectedTicketId,
+      )?.brief || null
     : null;
 
   const handleTrigger = async (key) => {
@@ -104,11 +112,16 @@ export default function App() {
             </div>
             <h1 className="text-xl font-bold tracking-tight">NEXUS</h1>
           </div>
-          <span className="text-xs px-3 py-1 rounded-full border" style={{
-            borderColor: connected ? '#10b981' : '#6b7280',
-            backgroundColor: connected ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
-            color: connected ? '#10b981' : '#9ca3af',
-          }}>
+          <span
+            className="text-xs px-3 py-1 rounded-full border"
+            style={{
+              borderColor: connected ? "#10b981" : "#6b7280",
+              backgroundColor: connected
+                ? "rgba(16, 185, 129, 0.1)"
+                : "rgba(107, 114, 128, 0.1)",
+              color: connected ? "#10b981" : "#9ca3af",
+            }}
+          >
             {connected ? "● Live" : "○ Connecting..."}
           </span>
         </div>
@@ -133,10 +146,10 @@ export default function App() {
         <div className="md:col-span-1">
           <div className="sticky top-24">
             <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
-              Tickets ({events.filter(e => e.event === 'started').length})
+              Tickets ({events.filter((e) => e.event === "started").length})
             </h2>
-            <TicketQueue 
-              events={events} 
+            <TicketQueue
+              events={events}
               onSelectTicket={setSelectedTicketId}
               selectedTicketId={selectedTicketId}
             />

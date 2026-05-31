@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 const styles = `
   .agent-status-container {
@@ -81,73 +81,80 @@ const styles = `
     color: #666;
     font-style: italic;
   }
-`
+`;
 
 const STEP_LABELS = {
-  started: 'Ticket Received',
-  sources_checked: 'Sources Checked',
-  coral_done: 'Coral Query',
-  signal_done: 'Signal Transform',
-  synthesis_done: 'Claude Analysis',
-  completed: 'Completed'
-}
+  started: "Ticket Received",
+  sources_checked: "Sources Checked",
+  coral_done: "Coral Query",
+  signal_done: "Signal Transform",
+  synthesis_done: "Claude Analysis",
+  completed: "Completed",
+};
 
 export default function AgentStatus({ events, ticketId }) {
-  const filteredEvents = events.filter((e) => e.ticket_id === ticketId)
-  const eventMap = new Map(filteredEvents.map(e => [e.event, e]))
-  
+  const filteredEvents = events.filter((e) => e.ticket_id === ticketId);
+  const eventMap = new Map(filteredEvents.map((e) => [e.event, e]));
+
   // Including new sources_checked step in the pipeline
-  const steps = ['started', 'sources_checked', 'coral_done', 'signal_done', 'synthesis_done', 'completed']
-  const reachedEvents = filteredEvents.map((e) => e.event)
-  
+  const steps = [
+    "started",
+    "sources_checked",
+    "coral_done",
+    "signal_done",
+    "synthesis_done",
+    "completed",
+  ];
+  const reachedEvents = filteredEvents.map((e) => e.event);
+
   // Check for error
-  const errorEvent = eventMap.get('error')
-  const sourcesEvent = eventMap.get('sources_checked')
-  
+  const errorEvent = eventMap.get("error");
+  const sourcesEvent = eventMap.get("sources_checked");
+
   // Determine step state
   const getStepState = (step) => {
     if (reachedEvents.includes(step)) {
-      return 'done'
+      return "done";
     }
-    if (errorEvent && step !== 'started' && step !== 'sources_checked') {
+    if (errorEvent && step !== "started" && step !== "sources_checked") {
       // Steps after error are blocked
-      return 'pending'
+      return "pending";
     }
     // Check if this is the current step (last reached step is different)
     if (reachedEvents.length > 0) {
-      const lastStep = reachedEvents[reachedEvents.length - 1]
-      const stepIndex = steps.indexOf(step)
-      const lastIndex = steps.indexOf(lastStep)
+      const lastStep = reachedEvents[reachedEvents.length - 1];
+      const stepIndex = steps.indexOf(step);
+      const lastIndex = steps.indexOf(lastStep);
       if (stepIndex === lastIndex + 1) {
-        return 'in-progress'
+        return "in-progress";
       }
     }
-    return 'pending'
-  }
-  
+    return "pending";
+  };
+
   const getStepIcon = (step) => {
-    const state = getStepState(step)
-    if (state === 'done') {
-      return '✓'
-    } else if (state === 'in-progress') {
-      return <span className="spinner"></span>
+    const state = getStepState(step);
+    if (state === "done") {
+      return "✓";
+    } else if (state === "in-progress") {
+      return <span className="spinner"></span>;
     } else {
-      return '○'
+      return "○";
     }
-  }
-  
+  };
+
   const getStepColor = (step) => {
-    const state = getStepState(step)
-    if (state === 'done') {
-      return 'step-done'
-    } else if (state === 'in-progress') {
-      return 'step-in-progress'
+    const state = getStepState(step);
+    if (state === "done") {
+      return "step-done";
+    } else if (state === "in-progress") {
+      return "step-in-progress";
     } else if (errorEvent) {
-      return 'step-error'
+      return "step-error";
     } else {
-      return 'step-pending'
+      return "step-pending";
     }
-  }
+  };
 
   return (
     <>
@@ -155,21 +162,20 @@ export default function AgentStatus({ events, ticketId }) {
       <div className="agent-status-container">
         {steps.map((step) => (
           <div key={step} className={`agent-step ${getStepColor(step)}`}>
-            <div className="step-icon">
-              {getStepIcon(step)}
-            </div>
+            <div className="step-icon">{getStepIcon(step)}</div>
             <span>{STEP_LABELS[step] || step}</span>
           </div>
         ))}
-        
+
         {sourcesEvent && (
           <div className="sources-info">
             Sources checked: {sourcesEvent.source_count}/4 available
-            {sourcesEvent.available_sources && sourcesEvent.available_sources.length > 0 && (
-              <div className="sources-list">
-                ✓ {sourcesEvent.available_sources.join(', ')}
-              </div>
-            )}
+            {sourcesEvent.available_sources &&
+              sourcesEvent.available_sources.length > 0 && (
+                <div className="sources-list">
+                  ✓ {sourcesEvent.available_sources.join(", ")}
+                </div>
+              )}
             {!sourcesEvent.healthy && (
               <div className="hint-text">
                 ⚠ Investigation may be incomplete with fewer than 3 sources
@@ -177,7 +183,7 @@ export default function AgentStatus({ events, ticketId }) {
             )}
           </div>
         )}
-        
+
         {errorEvent && (
           <div className="error-box">
             <strong>Error:</strong> {errorEvent.message}
@@ -185,5 +191,5 @@ export default function AgentStatus({ events, ticketId }) {
         )}
       </div>
     </>
-  )
+  );
 }

@@ -34,7 +34,9 @@ function ElapsedTimer({ startedAt }) {
   const [elapsed, setElapsed] = React.useState(0);
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setElapsed(Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000));
+      setElapsed(
+        Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000),
+      );
     }, 1000);
     return () => clearInterval(interval);
   }, [startedAt]);
@@ -43,17 +45,29 @@ function ElapsedTimer({ startedAt }) {
 
 function TicketRow({ ticket, expanded, onToggle, isSelected, onSelect }) {
   const statusConfig = {
-    processing: { label: "Processing", color: "bg-blue-500/20 text-blue-300", showSpinner: true },
-    done: { label: "Done", color: "bg-emerald-500/20 text-emerald-300", showSpinner: false },
-    error: { label: "Error", color: "bg-red-500/20 text-red-300", showSpinner: false },
+    processing: {
+      label: "Processing",
+      color: "bg-blue-500/20 text-blue-300",
+      showSpinner: true,
+    },
+    done: {
+      label: "Done",
+      color: "bg-emerald-500/20 text-emerald-300",
+      showSpinner: false,
+    },
+    error: {
+      label: "Error",
+      color: "bg-red-500/20 text-red-300",
+      showSpinner: false,
+    },
   };
   const config = statusConfig[ticket.status] || statusConfig.processing;
 
   return (
-    <div 
+    <div
       className={`border rounded-lg overflow-hidden cursor-pointer transition-all smooth-transition ${
-        isSelected 
-          ? "border-blue-500/50 bg-blue-500/10 shadow-lg shadow-blue-500/20" 
+        isSelected
+          ? "border-blue-500/50 bg-blue-500/10 shadow-lg shadow-blue-500/20"
           : "border-slate-700 bg-slate-800/50 hover:border-slate-600"
       }`}
       onClick={() => onSelect(ticket.ticket_id)}
@@ -74,7 +88,9 @@ function TicketRow({ ticket, expanded, onToggle, isSelected, onSelect }) {
           <span className="text-sm font-medium text-slate-200 font-mono">
             {ticket.ticket_id}
           </span>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${config.color} border-current/30`}>
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full font-medium border ${config.color} border-current/30`}
+          >
             {config.label}
           </span>
           {ticket.status === "done" && ticket.brief && (
@@ -107,7 +123,9 @@ function TicketRow({ ticket, expanded, onToggle, isSelected, onSelect }) {
 
       {expanded && ticket.status === "error" && (
         <div className="px-4 pb-4 border-t border-slate-700">
-          <p className="text-sm text-red-400 mt-3">{ticket.error || "Unknown error"}</p>
+          <p className="text-sm text-red-400 mt-3">
+            {ticket.error || "Unknown error"}
+          </p>
         </div>
       )}
 
@@ -120,7 +138,11 @@ function TicketRow({ ticket, expanded, onToggle, isSelected, onSelect }) {
   );
 }
 
-export default function TicketQueue({ events, onSelectTicket, selectedTicketId }) {
+export default function TicketQueue({
+  events,
+  onSelectTicket,
+  selectedTicketId,
+}) {
   const [expanded, setExpanded] = useState(null);
 
   const queue = buildQueue(events);
@@ -137,9 +159,9 @@ export default function TicketQueue({ events, onSelectTicket, selectedTicketId }
           key={ticket.ticket_id}
           ticket={ticket}
           expanded={expanded === ticket.ticket_id}
-          onToggle={() => setExpanded(
-            expanded === ticket.ticket_id ? null : ticket.ticket_id
-          )}
+          onToggle={() =>
+            setExpanded(expanded === ticket.ticket_id ? null : ticket.ticket_id)
+          }
           isSelected={selectedTicketId === ticket.ticket_id}
           onSelect={onSelectTicket}
         />

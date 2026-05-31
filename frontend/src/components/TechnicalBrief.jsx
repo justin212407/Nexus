@@ -24,17 +24,21 @@ const ROOT_CAUSE_COLORS = {
 
 function ConfidenceScore({ pct }) {
   const color =
-    pct >= 70 ? "text-green-600" : pct >= 50 ? "text-yellow-500" : "text-red-600";
-  return (
-    <span className={`text-3xl font-bold ${color}`}>{pct}%</span>
-  );
+    pct >= 70
+      ? "text-green-600"
+      : pct >= 50
+        ? "text-yellow-500"
+        : "text-red-600";
+  return <span className={`text-3xl font-bold ${color}`}>{pct}%</span>;
 }
 
 function RootCausePill({ rootCause }) {
   const label = ROOT_CAUSE_LABELS[rootCause] || rootCause;
   const color = ROOT_CAUSE_COLORS[rootCause] || "bg-gray-100 text-gray-600";
   return (
-    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${color}`}>
+    <span
+      className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${color}`}
+    >
       {label}
     </span>
   );
@@ -44,7 +48,9 @@ function SeverityPill({ severity }) {
   const label = SEVERITY_LABELS[severity] || severity;
   const color = SEVERITY_COLORS[severity] || "bg-gray-100 text-gray-600";
   return (
-    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${color}`}>
+    <span
+      className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${color}`}
+    >
       {label}
     </span>
   );
@@ -72,15 +78,15 @@ function CausalChain({ chain }) {
 
 export default function TechnicalBrief({ brief }) {
   if (!brief) {
-      return (
-        <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 text-gray-400 text-sm">
-          No brief available yet.
-        </div>
-      );
-    }
-
     return (
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 space-y-6">
+      <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 text-gray-400 text-sm">
+        No brief available yet.
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3 flex-wrap">
           <RootCausePill rootCause={brief.root_cause} />
@@ -95,13 +101,19 @@ export default function TechnicalBrief({ brief }) {
       <div className="grid grid-cols-2 gap-4 text-sm">
         {brief.affected_service && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <h4 className="text-xs font-semibold text-gray-500 mb-1">Service</h4>
-            <p className="text-gray-700 font-medium">{brief.affected_service}</p>
+            <h4 className="text-xs font-semibold text-gray-500 mb-1">
+              Service
+            </h4>
+            <p className="text-gray-700 font-medium">
+              {brief.affected_service}
+            </p>
           </div>
         )}
         {brief.affected_users !== undefined && (
           <div className="bg-gray-50 rounded-lg p-3">
-            <h4 className="text-xs font-semibold text-gray-500 mb-1">Affected Users</h4>
+            <h4 className="text-xs font-semibold text-gray-500 mb-1">
+              Affected Users
+            </h4>
             <p className="text-gray-700 font-medium">{brief.affected_users}</p>
           </div>
         )}
@@ -139,7 +151,9 @@ export default function TechnicalBrief({ brief }) {
           <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">
             Recommended Action
           </h3>
-          <p className="text-sm font-medium text-gray-800">{brief.recommended_action}</p>
+          <p className="text-sm font-medium text-gray-800">
+            {brief.recommended_action}
+          </p>
         </div>
       )}
 

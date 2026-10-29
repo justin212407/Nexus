@@ -1,5 +1,29 @@
 import { useEffect, useState } from "react";
 
+const CATEGORIES = [
+  "known_bug",
+  "service_degradation",
+  "user_error",
+  "external_dependency",
+  "unknown",
+];
+
+const COLORS = {
+  known_bug: "bg-rose-500",
+  service_degradation: "bg-orange-500",
+  user_error: "bg-blue-500",
+  external_dependency: "bg-violet-500",
+  unknown: "bg-slate-500",
+};
+
+const LABELS = {
+  known_bug: "Known Bug",
+  service_degradation: "Service Degradation",
+  user_error: "User Error",
+  external_dependency: "External Dependency",
+  unknown: "Unknown",
+};
+
 export default function MetricsBar({ events }) {
   const [stats, setStats] = useState({
     total_incidents: 0,
@@ -10,11 +34,10 @@ export default function MetricsBar({ events }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch initial stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("http://localhost:8000/stats");
+        const response = await fetch("/stats");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         setStats(data);
@@ -27,11 +50,10 @@ export default function MetricsBar({ events }) {
     };
 
     fetchStats();
-    const interval = setInterval(fetchStats, 30000); // Poll every 30s for fresh data
+    const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Update metrics when a new brief is completed
   useEffect(() => {
     const completedEvents = events.filter(
       (e) => e.event === "completed" && e.brief,
@@ -62,146 +84,62 @@ export default function MetricsBar({ events }) {
   }, [events]);
 
   if (loading)
-    return (
-      <div style={{ color: "#888", padding: "12px" }}>Loading metrics...</div>
-    );
+    return <div className="text-sm text-slate-500 py-3">Loading metrics...</div>;
   if (error)
-    return (
-      <div style={{ color: "#ef4444", padding: "12px" }}>
-        Failed to load stats: {error}
-      </div>
-    );
+    return <div className="text-sm text-rose-600 py-3">Failed to load stats: {error}</div>;
 
   const breakdown = stats.classification_breakdown || {};
   const total = stats.total_incidents || 0;
   const topService = stats.top_service || "unknown";
   const avgConfidence = Math.round(stats.avg_confidence_pct || 0);
 
-  // Render classification breakdown as horizontal bar
-  const categories = [
-    "known_bug",
-    "service_degradation",
-    "user_error",
-    "external_dependency",
-    "unknown",
-  ];
-  const colors = {
-    known_bug: "#ef4444",
-    service_degradation: "#f97316",
-    user_error: "#f59e0b",
-    external_dependency: "#8b5cf6",
-    unknown: "#6b7280",
-  };
-
-  const segments = categories.map((cat) => {
+  const segments = CATEGORIES.map((cat) => {
     const count = breakdown[cat] || 0;
     const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-    return { cat, count, pct, color: colors[cat] };
-  });
+    return { cat, count, pct };
+  }).filter((seg) => seg.count > 0);
 
   return (
-    <div style={{ color: "#ddd", fontSize: 13 }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          marginBottom: 12,
-        }}
-      >
-        <div style={{ fontWeight: 700, color: "#888" }}>
-          Incidents Today: <span style={{ color: "#fff" }}>{total}</span>
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-2 text-xs">
+        <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+          <p className="text-slate-500 mb-0.5">Incidents</p>
+          <p className="text-lg font-bold text-slate-900">{total}</p>
         </div>
-        <div style={{ color: "#888" }}>
-          Avg Confidence:{" "}
-          <span style={{ color: "#fff", fontWeight: 700 }}>
-            {avgConfidence}%
-          </span>
+        <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+          <p className="text-slate-500 mb-0.5">Avg Confidence</p>
+          <p className="text-lg font-bold text-slate-900">{avgConfidence}%</p>
         </div>
-        <div style={{ color: "#888" }}>
-          Top:{" "}
-          <span
-            style={{
-              color: "#fff",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "80px",
-              display: "inline-block",
-              verticalAlign: "bottom",
-            }}
-          >
-            {topService}
-          </span>
+        <div className="bg-slate-50 p-2 rounded-lg border border-slate-200 min-w-0">
+          <p className="text-slate-500 mb-0.5">Top Service</p>
+          <p className="text-sm font-bold text-slate-900 truncate">{topService}</p>
         </div>
       </div>
 
-      <div
-        style={{
-          height: 12,
-          background: "#111",
-          border: "1px solid #1a1a1a",
-          borderRadius: 8,
-          overflow: "hidden",
-          display: "flex",
-        }}
-      >
-        {segments
-          .filter((s) => s.count > 0)
-          .map((seg) => (
-            <div
-              key={seg.cat}
-              title={`${seg.cat}: ${seg.count} (${seg.pct}%)`}
-              style={{
-                width: `${seg.pct}%`,
-                background: seg.color,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {seg.pct > 15 && (
-                <span
-                  style={{ fontSize: 11, color: "#0a0a0a", fontWeight: 700 }}
-                >
-                  {seg.pct}%
-                </span>
-              )}
-            </div>
-          ))}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-          marginTop: 12,
-        }}
-      >
+      <div className="h-3 bg-slate-100 rounded-full overflow-hidden flex border border-slate-200">
         {segments.map((seg) => (
           <div
             key={seg.cat}
-            style={{ display: "flex", alignItems: "center", gap: 8 }}
-          >
-            <div
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 3,
-                background: seg.color,
-              }}
-            />
-            <div style={{ color: "#888" }}>
-              {seg.cat}:{" "}
-              <span style={{ color: "#fff", fontWeight: 700 }}>
-                {" "}
-                {seg.count}
-              </span>
-            </div>
-          </div>
+            title={`${LABELS[seg.cat]}: ${seg.count} (${seg.pct}%)`}
+            className={`${COLORS[seg.cat]} h-full`}
+            style={{ width: `${seg.pct}%` }}
+          />
         ))}
+      </div>
+
+      <div className="space-y-2">
+        {CATEGORIES.map((cat) => {
+          const count = breakdown[cat] || 0;
+          return (
+            <div key={cat} className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <span className={`w-3 h-3 rounded ${COLORS[cat]}`} />
+                <span className="text-slate-600">{LABELS[cat]}</span>
+              </div>
+              <span className="font-semibold text-slate-900">{count}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,208 +1,221 @@
 import React from "react";
-
-function buildQueue(events) {
-  const map = new Map();
-  for (const e of events) {
-    if (e.event === "started") {
-      map.set(e.ticket_id, {
-        ticket_id: e.ticket_id,
-        status: "processing",
-        started_at: e.timestamp || Date.now(),
-        brief: null,
-        error: null,
-      });
-    } else if (e.event === "completed" && map.has(e.ticket_id)) {
-      map.set(e.ticket_id, {
-        ...map.get(e.ticket_id),
-        status: "done",
-        brief: e.brief,
-        completed_at: e.timestamp || Date.now(),
-      });
-    } else if (e.event === "error" && map.has(e.ticket_id)) {
-      map.set(e.ticket_id, {
-        ...map.get(e.ticket_id),
-        status: "error",
-        error: e.error,
-      });
-    }
-  }
-  return Array.from(map.values()).reverse();
-}
-
-function ElapsedTimer({ startedAt }) {
-  const [elapsed, setElapsed] = React.useState(0);
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setElapsed(
-        Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000),
-      );
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [startedAt]);
-  return <span style={{ fontSize: 12, color: "#888" }}>{elapsed}s</span>;
-}
-
-function TicketRow({ ticket, isSelected, onSelect }) {
-  const statusDot = {
-    processing: "#3b82f6",
-    done: "#22c55e",
-    error: "#ef4444",
-  };
-
-  const rcColors = {
-    known_bug: "#ef4444",
-    service_degradation: "#f97316",
-    user_error: "#3b82f6",
-    external_dependency: "#a855f7",
-    unknown: "#666",
-  };
-
-  const dot = statusDot[ticket.status] || "#666";
-  const rc = ticket.brief?.root_cause;
-  const rcColor = rcColors[rc] || "#666";
-  const rcLabel = rc ? rc.replace(/_/g, " ") : "";
-
-  return (
-    <div
-      onClick={() => onSelect(ticket.ticket_id)}
-      style={{
-        padding: "10px 12px",
-        borderRadius: "8px",
-        border: `1px solid ${isSelected ? "#2a3a5a" : "#1a1a1a"}`,
-        background: isSelected ? "rgba(59,130,246,0.06)" : "transparent",
-        cursor: "pointer",
-        marginBottom: "8px",
-        transition: "all 0.12s",
-        display: "flex",
-        alignItems: "center",
-      }}
-      onMouseEnter={(e) => {
-        if (!isSelected) e.currentTarget.style.background = "#111";
-      }}
-      onMouseLeave={(e) => {
-        if (!isSelected) e.currentTarget.style.background = "transparent";
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          width: "100%",
-        }}
-      >
-        <div style={{ flexShrink: 0 }}>
-          <div
-            style={{
-              width: "10px",
-              height: "10px",
-              borderRadius: "50%",
-              background: ticket.status === "processing" ? "transparent" : dot,
-              border:
-                ticket.status === "processing" ? `2px solid ${dot}` : "none",
-              boxSizing: "border-box",
-            }}
-          />
-        </div>
-
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "12px",
-              marginBottom: "4px",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "12px",
-                color: "#fff",
-                fontFamily: "monospace",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: "180px",
-              }}
-            >
-              #{String(ticket.ticket_id.split("_").slice(-1)[0]).slice(-6)}
-            </span>
-            {ticket.status === "done" && ticket.brief && (
-              <span
-                style={{ fontSize: "13px", fontWeight: 700, color: "#fff" }}
-              >
-                {ticket.brief.confidence_pct}%
-              </span>
-            )}
-          </div>
-
-          {ticket.status === "done" && ticket.brief ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  color: rcColor,
-                  textTransform: "capitalize",
-                }}
-              >
-                {rcLabel}
-              </span>
-              <span style={{ color: "#333", fontSize: "12px" }}>·</span>
-              <span style={{ fontSize: "12px", color: "#888" }}>
-                {ticket.brief.affected_users?.toLocaleString() || "—"}{" "}
-                {ticket.brief.affected_users === 1 ? "user" : "users"}
-              </span>
-            </div>
-          ) : ticket.status === "processing" ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <ElapsedTimer startedAt={ticket.started_at} />
-              <span style={{ fontSize: "12px", color: "#888" }}>
-                analyzing…
-              </span>
-            </div>
-          ) : (
-            <span style={{ fontSize: "12px", color: "#ef4444" }}>
-              Pipeline error
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+import Icon from "./Icon";
+import {
+  initials,
+  customerName,
+  relativeTime,
+  reviewState,
+  STATE_LABELS,
+  ticketCode,
+  ticketTitle,
+} from "../lib/workspace";
 
 export default function TicketQueue({
-  events,
-  onSelectTicket,
-  selectedTicketId,
+  tickets,
+  selectedId,
+  onSelect,
+  search,
+  onSearch,
+  filter,
+  onFilter,
+  severity,
+  onSeverity,
+  scope,
+  onScope,
+  mode,
+  total,
+  loading,
+  onDemo,
+  onRefresh,
 }) {
-  const queue = buildQueue(events);
-
-  if (queue.length === 0) {
-    return (
-      <div style={{ textAlign: "center", padding: "36px 16px" }}>
-        <p style={{ color: "#888", fontSize: "13px", marginBottom: "8px" }}>
-          No incidents yet
-        </p>
-        <p style={{ color: "#555", fontSize: "12px" }}>
-          Trigger a scenario to begin
-        </p>
-      </div>
-    );
-  }
-
+  const groups = [...new Set(tickets.map(reviewState))];
   return (
-    <div>
-      {queue.map((ticket) => (
-        <TicketRow
-          key={ticket.ticket_id}
-          ticket={ticket}
-          isSelected={selectedTicketId === ticket.ticket_id}
-          onSelect={onSelectTicket}
-        />
-      ))}
-    </div>
+    <aside className="queue-panel" aria-label="Ticket queue">
+      <div className="queue-heading">
+        <div>
+          <h1>
+            Inbox <span className="count-badge">{total}</span>
+          </h1>
+          <p>A little clarity for every escalation.</p>
+        </div>
+        <button
+          className="icon-button"
+          onClick={onRefresh}
+          aria-label="Refresh tickets"
+        >
+          <Icon name="refresh" size={16} />
+        </button>
+      </div>
+      <div className="queue-controls">
+        <label className="search-field">
+          <Icon name="search" size={17} />
+          <input
+            aria-label="Search tickets"
+            placeholder="Search tickets…"
+            value={search}
+            onChange={(e) => onSearch(e.target.value)}
+          />
+          {search && (
+            <button aria-label="Clear search" onClick={() => onSearch("")}>
+              <Icon name="close" size={14} />
+            </button>
+          )}
+        </label>
+        <div className="queue-tabs" aria-label="Ticket status filter">
+          {[
+            ["open", "Open"],
+            ["all", "All"],
+            ["resolved", "Resolved"],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              className={filter === key ? "active" : ""}
+              onClick={() => onFilter(key)}
+              aria-pressed={filter === key}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="filter-row">
+          <label className="select-wrap">
+            <Icon name="filter" size={15} />
+            <select
+              aria-label="Filter severity"
+              value={severity}
+              onChange={(e) => onSeverity(e.target.value)}
+            >
+              <option value="all">All priorities</option>
+              {["critical", "high", "medium", "low"].map((value) => (
+                <option key={value} value={value}>
+                  {value.charAt(0).toUpperCase() + value.slice(1)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <select
+            aria-label="Ticket environment"
+            className="scope-select"
+            value={scope}
+            onChange={(e) => onScope(e.target.value)}
+          >
+            <option value="current">
+              {mode === "demo"
+                ? "Demo tickets"
+                : mode === "live"
+                  ? "Live tickets"
+                  : "Workspace"}
+            </option>
+            <option value="legacy">Imported history</option>
+          </select>
+        </div>
+      </div>
+      <div className="queue-list">
+        {loading && (
+          <div className="queue-loading" aria-label="Loading tickets">
+            {[1, 2, 3, 4].map((n) => (
+              <div className="skeleton-row" key={n}>
+                <span />
+                <span />
+              </div>
+            ))}
+          </div>
+        )}
+        {!loading && !tickets.length && (
+          <div className="queue-empty">
+            <span className="empty-icon">
+              <Icon name="inbox" size={24} />
+            </span>
+            <h3>
+              {search || severity !== "all" || filter === "resolved"
+                ? "No matching tickets"
+                : "You’re all caught up"}
+            </h3>
+            <p>
+              {search || severity !== "all" || filter === "resolved"
+                ? "Try a different filter or search."
+                : mode === "demo"
+                  ? "Load sample tickets to explore the review workflow."
+                  : "Incoming tickets will appear here."}
+            </p>
+            {search || severity !== "all" || filter === "resolved" ? (
+              <button
+                className="text-button"
+                onClick={() => {
+                  onSearch("");
+                  onSeverity("all");
+                  onFilter("open");
+                }}
+              >
+                Clear filters
+              </button>
+            ) : (
+              mode === "demo" &&
+              scope !== "legacy" && (
+                <button className="text-button" onClick={onDemo}>
+                  Explore demo scenarios <Icon name="arrow" size={15} />
+                </button>
+              )
+            )}
+          </div>
+        )}
+        {groups.map((state) => (
+          <div className="queue-group" key={state}>
+            <div className="queue-group-label">
+              <span>
+                <i className={`status-dot ${state}`} />
+                {STATE_LABELS[state]}
+              </span>
+              <span>
+                {tickets.filter((t) => reviewState(t) === state).length}
+              </span>
+            </div>
+            {tickets
+              .filter((t) => reviewState(t) === state)
+              .map((ticket) => (
+                <button
+                  key={ticket.ticket_id}
+                  className={`ticket-row ${ticket.ticket_id === selectedId ? "selected" : ""}`}
+                  onClick={() => onSelect(ticket.ticket_id)}
+                  aria-current={
+                    ticket.ticket_id === selectedId ? "true" : undefined
+                  }
+                >
+                  <div className="ticket-row-top">
+                    <span
+                      className={`avatar avatar-small tone-${(ticket.customer_email || "").length % 4}`}
+                    >
+                      {initials(ticket.customer_email)}
+                    </span>
+                    <span className="ticket-customer">
+                      {customerName(ticket.customer_email)}
+                    </span>
+                    <time>
+                      {relativeTime(ticket.received_at || ticket.created_at)}
+                    </time>
+                  </div>
+                  <span className="ticket-subject">{ticketTitle(ticket)}</span>
+                  <div className="ticket-row-bottom">
+                    <span className="ticket-code">{ticketCode(ticket)}</span>
+                    <span
+                      className={`severity-inline ${ticket.brief?.severity || ""}`}
+                    >
+                      <i />
+                      {ticket.brief?.severity ||
+                        (state === "attention"
+                          ? "Analysis failed"
+                          : "Analyzing")}
+                    </span>
+                  </div>
+                </button>
+              ))}
+          </div>
+        ))}
+      </div>
+      <div className="queue-footer">
+        <Icon name="shield" size={14} />
+        <span>Every response starts with your review.</span>
+      </div>
+    </aside>
   );
 }

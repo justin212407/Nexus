@@ -1,44 +1,38 @@
 import asyncio
-
+import json
 import pytest
-
 from api import stream
 
-
-def drain_queue():
-    while not stream._queue.empty():
-        stream._queue.get_nowait()
-
+@pytest.mark.asyncio
+async def test_broadcast_reaches_every_subscriber_and_cleans_up():
+    first, second = stream.event_generator(), stream.event_generator()
+    assert await first.__anext__() == ': connected\n\n'
+    assert await second.__anext__() == ': connected\n\n'
+    event = {'event': 'completed', 'ticket_id': 'example', 'brief': {'ok': True}}
+    await stream.broadcast(event)
+    for generator in (first, second):
+        message = await asyncio.wait_for(generator.__anext__(), timeout=1)
+        assert json.loads(message.removeprefix('data: ').strip()) == event
+        await generator.aclose()
+    assert not stream._subscribers
 
 @pytest.mark.asyncio
-async def test_stream_broadcast_and_order():
-    drain_queue()
-
-    await stream.broadcast({"event": "started", "ticket_id": "ticket_checkout"})
-    await stream.broadcast({"event": "completed", "ticket_id": "ticket_checkout", "brief": {"ok": True}})
-
+async def test_slow_subscriber_gets_reconciliation_notice():
     generator = stream.event_generator()
-    first = await asyncio.wait_for(generator.__anext__(), timeout=1)
-    second = await asyncio.wait_for(generator.__anext__(), timeout=1)
-
-    assert first == 'data: {"event": "started", "ticket_id": "ticket_checkout"}\n\n'
-    assert second == 'data: {"event": "completed", "ticket_id": "ticket_checkout", "brief": {"ok": true}}\n\n'
-
+    await generator.__anext__()
+    for n in range(129):
+        await stream.broadcast({'event': 'started', 'ticket_id': str(n)})
+    assert 'sync_required' in await generator.__anext__()
+    assert '128' in await generator.__anext__()
+    await generator.aclose()
 
 @pytest.mark.asyncio
 async def test_stream_requires_event_shape():
-    drain_queue()
-
-    with pytest.raises(ValueError):
-        await stream.broadcast({"ticket_id": "ticket_checkout"})
-
-    with pytest.raises(ValueError):
-        await stream.broadcast({"event": "started"})
-
+    for event in ({'ticket_id':'a'}, {'event':'started'}):
+        with pytest.raises(ValueError): await stream.broadcast(event)
 
 @pytest.mark.asyncio
 async def test_stream_endpoint_headers():
     response = await stream.stream()
-
-    assert response.media_type == "text/event-stream"
-    assert response.headers["x-accel-buffering"] == "no"
+    assert response.media_type == 'text/event-stream'
+    assert response.headers['x-accel-buffering'] == 'no'

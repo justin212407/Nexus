@@ -120,6 +120,10 @@ async def run_pipeline(ticket: TicketContext):
         await broadcast({
             "event": "started",
             "ticket_id": ticket.ticket_id,
+            "customer_email": ticket.customer_email,
+            "message_body": ticket.message_body,
+            "environment": "demo" if settings.DEMO_MODE else "live",
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         })
 
         # CHECK SOURCES HEALTH
@@ -214,7 +218,7 @@ async def intercom_webhook(
     )
 
     # Demo bypass for local testing
-    if signature != "sha256=demo_bypass":
+    if not (settings.DEMO_MODE and signature == "sha256=demo_bypass"):
         if not verify_hmac(body, signature):
             raise HTTPException(
                 status_code=401,

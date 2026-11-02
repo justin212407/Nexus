@@ -1,0 +1,57 @@
+- generic [ref=f1e3]:
+  - link "Skip to workspace" [ref=f1e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=f1e5]:
+    - link "NEXUS home" [ref=f1e6] [cursor=pointer]:
+      - /url: "#inbox"
+      - generic [ref=f1e10]: NEXUS
+    - separator
+    - generic [ref=f1e11]: Support workspace
+    - button "Collapse queue" [ref=f1e12] [cursor=pointer]
+    - navigation "Main navigation" [ref=f1e13]:
+      - button "Inbox" [ref=f1e14] [cursor=pointer]
+      - button "Insights" [ref=f1e15] [cursor=pointer]
+    - generic [ref=f1e16]:
+      - generic "Waiting for the event stream; saved tickets remain available" [ref=f1e17]: Reconnecting
+      - generic [ref=f1e19]: Mode unavailable
+      - button "Search ⌘K" [ref=f1e20] [cursor=pointer]:
+        - generic [ref=f1e21]: Search
+        - generic: ⌘K
+  - generic [ref=f1e23]:
+    - complementary "Ticket queue" [ref=f1e27]:
+      - generic [ref=f1e28]:
+        - generic [ref=f1e29]:
+          - heading "Inbox 0" [level=1] [ref=f1e30]:
+            - text: Inbox
+            - generic [ref=f1e31]: "0"
+          - paragraph [ref=f1e32]: A little clarity for every escalation.
+        - button "Refresh tickets" [ref=f1e33] [cursor=pointer]
+      - generic [ref=f1e37]:
+        - generic [ref=f1e38]:
+          - textbox "Search tickets":
+            - /placeholder: Search tickets…
+        - generic "Ticket status filter":
+          - button "Open" [pressed] [ref=f1e42] [cursor=pointer]
+          - button "All" [ref=f1e43] [cursor=pointer]
+          - button "Resolved" [ref=f1e44] [cursor=pointer]
+        - generic:
+          - combobox "Filter severity" [ref=f1e48] [cursor=pointer]:
+            - option "All priorities" [selected]
+            - option "Critical"
+            - option "High"
+            - option "Medium"
+            - option "Low"
+          - combobox "Ticket environment" [ref=f1e49] [cursor=pointer]:
+            - option "Workspace" [selected]
+            - option "Imported history"
+      - generic "Loading tickets" [ref=f1e51]
+      - generic [ref=f1e52]: Every response starts with your review.
+    - separator [ref=f1e57]
+    - generic [ref=f1e62]:
+      - generic [ref=f1e70]: A clearer way to support
+      - heading "Opening your workspace…" [level=2] [ref=f1e71]
+      - paragraph [ref=f1e72]: Loading saved tickets and connecting to new activity.
+      - generic [ref=f1e73]: Prepared by AI. Reviewed by you.
+  - generic [ref=f1e77]:
+    - heading "Command Palette" [level=2] [ref=f1e78]
+    - paragraph [ref=f1e79]: Search for a command to run...

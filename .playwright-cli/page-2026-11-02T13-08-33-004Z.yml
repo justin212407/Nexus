@@ -1,0 +1,166 @@
+- generic [ref=f1e3]:
+  - link "Skip to workspace" [ref=f1e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=f1e5]:
+    - link "NEXUS home" [ref=f1e6] [cursor=pointer]:
+      - /url: "#inbox"
+      - generic [ref=f1e10]: NEXUS
+    - separator
+    - generic [ref=f1e11]: Support workspace
+    - button "Collapse queue" [ref=f1e12] [cursor=pointer]
+    - navigation "Main navigation" [ref=f1e13]:
+      - button "Inbox 6" [ref=f1e95] [cursor=pointer]:
+        - text: Inbox
+        - generic [ref=f1e96]: "6"
+      - button "Insights" [ref=f1e15] [cursor=pointer]
+      - button "Demo lab" [ref=f1e97] [cursor=pointer]
+    - generic [ref=f1e16]:
+      - generic "Event stream connected" [ref=f1e98]: Connected
+      - generic [ref=f1e19]: Demo workspace
+      - button "Search tickets and views" [ref=f1e20] [cursor=pointer]:
+        - generic [ref=f1e21]: Search
+        - generic: ⌘K
+  - generic [ref=f1e23]:
+    - complementary "Ticket queue" [ref=f1e27]:
+      - generic [ref=f1e28]:
+        - generic [ref=f1e29]:
+          - heading "Inbox 6" [level=1] [ref=f1e99]:
+            - text: Inbox
+            - generic [ref=f1e31]: "6"
+          - paragraph [ref=f1e32]: A little clarity for every escalation.
+        - button "Refresh tickets" [ref=f1e33] [cursor=pointer]
+      - generic [ref=f1e37]:
+        - textbox "Search tickets" [ref=f1e42]:
+          - /placeholder: Search tickets…
+        - generic "Ticket status filter" [ref=f1e43]:
+          - button "Open" [pressed] [ref=f1e44] [cursor=pointer]
+          - button "All" [ref=f1e45] [cursor=pointer]
+          - button "Resolved" [ref=f1e46] [cursor=pointer]
+        - generic [ref=f1e47]:
+          - combobox "Filter severity" [ref=f1e51] [cursor=pointer]:
+            - option "All priorities" [selected]
+            - option "Critical"
+            - option "High"
+            - option "Medium"
+            - option "Low"
+          - combobox "Ticket environment" [ref=f1e52] [cursor=pointer]:
+            - option "Demo tickets" [selected]
+            - option "Imported history"
+      - generic [ref=f1e100]:
+        - generic [ref=f1e101]:
+          - generic [ref=f1e102]: Needs review
+          - generic [ref=f1e104]: "6"
+        - button "JW james.wilson 2d ago Payments are timing out across our workspace NXS-1041 critical" [ref=f1e105] [cursor=pointer]:
+          - generic [ref=f1e106]:
+            - generic [ref=f1e107]: JW
+            - generic [ref=f1e108]: james.wilson
+            - time [ref=f1e109]: 2d ago
+          - generic [ref=f1e110]: Payments are timing out across our workspace
+          - generic [ref=f1e111]:
+            - generic [ref=f1e112]: NXS-1041
+            - generic [ref=f1e113]: critical
+        - button "PS priya.shah 2d ago Our subscription payment is not going through NXS-1038 critical" [ref=f1e115] [cursor=pointer]:
+          - generic [ref=f1e116]:
+            - generic [ref=f1e117]: PS
+            - generic [ref=f1e118]: priya.shah
+            - time [ref=f1e119]: 2d ago
+          - generic [ref=f1e120]: Our subscription payment is not going through
+          - generic [ref=f1e121]:
+            - generic [ref=f1e122]: NXS-1038
+            - generic [ref=f1e123]: critical
+        - button "MC maya.chen 5d ago Checkout fails after entering card details NXS-1042 high" [ref=f1e125] [cursor=pointer]:
+          - generic [ref=f1e126]:
+            - generic [ref=f1e127]: MC
+            - generic [ref=f1e128]: maya.chen
+            - time [ref=f1e129]: 5d ago
+          - generic [ref=f1e130]: Checkout fails after entering card details
+          - generic [ref=f1e131]:
+            - generic [ref=f1e132]: NXS-1042
+            - generic [ref=f1e133]: high
+        - button "AR alex.rivera 5d ago Card payment returns an unexpected error NXS-1039 high" [ref=f1e135] [cursor=pointer]:
+          - generic [ref=f1e136]:
+            - generic [ref=f1e137]: AR
+            - generic [ref=f1e138]: alex.rivera
+            - time [ref=f1e139]: 5d ago
+          - generic [ref=f1e140]: Card payment returns an unexpected error
+          - generic [ref=f1e141]:
+            - generic [ref=f1e142]: NXS-1039
+            - generic [ref=f1e143]: high
+        - button "SK sarah.kim 2d ago Unable to sign in after resetting my password NXS-1040 low" [ref=f1e145] [cursor=pointer]:
+          - generic [ref=f1e146]:
+            - generic [ref=f1e147]: SK
+            - generic [ref=f1e148]: sarah.kim
+            - time [ref=f1e149]: 2d ago
+          - generic [ref=f1e150]: Unable to sign in after resetting my password
+          - generic [ref=f1e151]:
+            - generic [ref=f1e152]: NXS-1040
+            - generic [ref=f1e153]: low
+        - button "DM dan.miller 2d ago Sign-in page keeps returning me to the start NXS-1037 low" [ref=f1e155] [cursor=pointer]:
+          - generic [ref=f1e156]:
+            - generic [ref=f1e157]: DM
+            - generic [ref=f1e158]: dan.miller
+            - time [ref=f1e159]: 2d ago
+          - generic [ref=f1e160]: Sign-in page keeps returning me to the start
+          - generic [ref=f1e161]:
+            - generic [ref=f1e162]: NXS-1037
+            - generic [ref=f1e163]: low
+      - generic [ref=f1e67]: Every response starts with your review.
+    - separator [ref=f1e72]
+    - region "Selected ticket" [ref=f1e165]:
+      - generic [ref=f1e166]:
+        - generic [ref=f1e167]:
+          - generic [ref=f1e171]: Inbox
+          - generic [ref=f1e174]: NXS-1041
+        - generic [ref=f1e175]:
+          - generic [ref=f1e176]: 1 of 6
+          - button "Previous ticket" [disabled] [ref=f1e177]
+          - button "Next ticket" [ref=f1e180] [cursor=pointer]
+      - generic [ref=f1e184]:
+        - generic [ref=f1e185]:
+          - generic [ref=f1e186]:
+            - generic [ref=f1e187]: Needs review
+            - generic [ref=f1e189]: critical priority
+          - heading "Payments are timing out across our workspace" [level=1] [ref=f1e190]
+          - generic [ref=f1e191]:
+            - generic [ref=f1e192]: JW
+            - generic [ref=f1e193]:
+              - strong [ref=f1e194]: james.wilson
+              - generic [ref=f1e195]: james.wilson@orbit.example
+            - time [ref=f1e196]: Received 2d ago
+        - generic [ref=f1e197]:
+          - tablist "Ticket details" [ref=f1e198]:
+            - tab "Conversation" [selected] [ref=f1e199] [cursor=pointer]
+            - tab "Activity 0" [ref=f1e200] [cursor=pointer]
+          - button "Evidence 2" [ref=f1e201] [cursor=pointer]:
+            - text: Evidence
+            - generic [ref=f1e205]: "2"
+        - generic [ref=f1e208]:
+          - generic [ref=f1e209]:
+            - heading "Customer message" [level=2] [ref=f1e213]
+            - generic [ref=f1e214]: Intercom
+          - paragraph [ref=f1e215]: Several people on our team cannot complete a payment. The page keeps loading and eventually times out. Is this related to the payment provider?
+        - generic [ref=f1e220]:
+          - generic [ref=f1e221]:
+            - strong [ref=f1e222]: External dependency
+            - generic [ref=f1e223]: payment-gateway
+          - paragraph [ref=f1e224]: Stripe payment gateway reporting global degradation. All payment processing affected across all customers.
+          - button "2 sources referenced" [ref=f1e225] [cursor=pointer]
+        - generic [ref=f1e228]:
+          - generic [ref=f1e229]:
+            - heading "Customer reply" [level=2] [ref=f1e234]
+            - generic [ref=f1e235]: AI-drafted
+          - generic [ref=f1e238]:
+            - generic [ref=f1e239]: To
+            - strong [ref=f1e240]: james.wilson@orbit.example
+            - generic [ref=f1e241]: via Intercom
+          - generic [ref=f1e242]: Customer reply draft
+          - textbox "Customer reply draft" [ref=f1e243]: We are aware of a payment processing issue affecting our platform. This is caused by an outage with our payment provider Stripe, which is actively working to resolve it. We'll update you as soon as payments are restored.
+          - generic [ref=f1e244]: Review and personalize before sending
+          - generic [ref=f1e246]:
+            - button "Review reply" [ref=f1e247] [cursor=pointer]
+            - button "Escalate" [ref=f1e252] [cursor=pointer]
+            - button "Mark resolved" [ref=f1e255] [cursor=pointer]
+        - paragraph [ref=f1e261]: Demo workspace. Review actions are simulated; no external messages are sent.
+  - generic [ref=f1e92]:
+    - heading "Command Palette" [level=2] [ref=f1e93]
+    - paragraph [ref=f1e94]: Search for a command to run...

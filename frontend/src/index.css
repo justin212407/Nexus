@@ -32,6 +32,8 @@
   --success-foreground: #f0fdf4;
   --warning: #92400e;
   --warning-foreground: #fffbeb;
+  --demo: #6941c6;
+  --demo-foreground: #f4f3ff;
   --border: #e2e6ec;
   --input: #d1d8e3;
   --ring: #2459d3;
@@ -72,6 +74,8 @@
   --success-foreground: #052e16;
   --warning: #fbbf24;
   --warning-foreground: #231a00;
+  --demo: #a78bfa;
+  --demo-foreground: #191036;
   --border: #243247;
   --input: #2e3d54;
   --ring: #6c9bf2;
@@ -114,6 +118,8 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-demo: var(--demo);
+  --color-demo-foreground: var(--demo-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -159,8 +165,8 @@
   --canvas: #f6f7f9;
   --surface: #fff;
   --text: #182230;
-  --secondary: #526071;
-  --muted: #626d7e;
+  --ink-secondary: #526071;
+  --ink-muted: #626d7e;
   --line: #e2e6ec;
   --blue: #2459d3;
   --blue-soft: #edf3ff;
@@ -235,7 +241,7 @@ a {
 }
 input::placeholder,
 textarea::placeholder {
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .icon {
   vertical-align: middle;
@@ -313,7 +319,7 @@ textarea::placeholder {
   align-items: center;
   gap: 12px;
   font-size: 13px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   white-space: nowrap;
 }
 .workspace-name .icon {
@@ -334,7 +340,7 @@ textarea::placeholder {
   padding: 0 15px;
   font-size: 13px;
   font-weight: 550;
-  color: var(--muted);
+  color: var(--ink-muted);
   position: relative;
 }
 .main-nav > a:hover {
@@ -373,7 +379,7 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: 12px;
 }
 .connection i {
@@ -436,7 +442,7 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   background: #edf0f4;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   font-size: 12px;
   font-weight: 550;
   padding: 2px 6px;
@@ -446,7 +452,7 @@ textarea::placeholder {
 }
 .queue-heading p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   margin-top: 5px;
   letter-spacing: -0.1px;
 }
@@ -457,7 +463,7 @@ textarea::placeholder {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   flex-shrink: 0;
 }
 .icon-button:hover:not(:disabled) {
@@ -476,7 +482,7 @@ textarea::placeholder {
   align-items: center;
   gap: 9px;
   padding: 0 10px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .search-field input {
   padding: 0;
@@ -508,7 +514,7 @@ textarea::placeholder {
   padding: 0 1px 11px;
   font-size: 12px;
   font-weight: 550;
-  color: var(--muted);
+  color: var(--ink-muted);
   position: relative;
 }
 .queue-tabs button.active {
@@ -533,7 +539,7 @@ textarea::placeholder {
 .filter-row select {
   background: transparent;
   border: 0;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   font-size: 12px;
   cursor: pointer;
   padding: 4px 0;
@@ -557,7 +563,7 @@ textarea::placeholder {
 .queue-group-label {
   font-size: 12px;
   font-weight: 550;
-  color: var(--muted);
+  color: var(--ink-muted);
   padding: 10px 20px;
   display: flex;
   align-items: center;
@@ -662,7 +668,7 @@ textarea::placeholder {
 }
 .ticket-row time {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   margin-left: auto;
   white-space: nowrap;
 }
@@ -686,7 +692,7 @@ textarea::placeholder {
 .ticket-code {
   font-family: "SFMono-Regular", Consolas, monospace;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   max-width: 120px;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -698,7 +704,7 @@ textarea::placeholder {
   align-items: center;
   gap: 4px;
   text-transform: capitalize;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .severity-inline i {
   width: 4px;
@@ -725,7 +731,7 @@ textarea::placeholder {
   gap: 7px;
   border-top: 1px solid var(--line);
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   background: #fbfcfe;
 }
 .queue-empty {
@@ -738,7 +744,7 @@ textarea::placeholder {
 }
 .queue-empty p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .queue-empty .text-button {
   margin: 14px auto 0;
@@ -782,12 +788,12 @@ textarea::placeholder {
   align-items: center;
   gap: 10px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   min-width: 0;
 }
 .breadcrumb .mono {
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -801,7 +807,7 @@ textarea::placeholder {
 }
 .ticket-pagination > span {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   margin-right: 9px;
 }
 .detail-scroll {
@@ -836,7 +842,7 @@ textarea::placeholder {
   gap: 6px;
   align-items: center;
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .severity-pill {
   display: inline-flex;
@@ -888,14 +894,14 @@ textarea::placeholder {
 }
 .customer-line > div > span {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .customer-line time {
   margin-left: auto;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   white-space: nowrap;
 }
 .detail-tabs {
@@ -913,7 +919,7 @@ textarea::placeholder {
 .detail-tabs [role="tab"] {
   font-size: 12px;
   font-weight: 550;
-  color: var(--muted);
+  color: var(--ink-muted);
   padding: 0 0 13px;
   position: relative;
   white-space: nowrap;
@@ -941,7 +947,7 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   font-size: 12px;
   padding: 0 0 13px;
   white-space: nowrap;
@@ -959,18 +965,18 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   gap: 7px;
-  color: var(--muted);
+  color: var(--ink-muted);
   margin-bottom: 10px;
 }
 .section-label h2 {
   font-size: 12px;
   font-weight: 550;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .section-label > span {
   margin-left: auto;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .customer-message > p {
   font-size: 13px;
@@ -1010,13 +1016,13 @@ textarea::placeholder {
 }
 .diagnosis-title > span {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   padding-left: 9px;
   border-left: 1px solid #d9e0eb;
 }
 .diagnosis-strip p {
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   line-height: 1.6;
   margin: 4px 0;
 }
@@ -1051,7 +1057,7 @@ textarea::placeholder {
   display: flex;
   gap: 8px;
   align-items: center;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .response-editor h2 {
   font-size: 12px;
@@ -1063,7 +1069,7 @@ textarea::placeholder {
   gap: 4px;
   align-items: center;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .recipient {
   display: flex;
@@ -1071,7 +1077,7 @@ textarea::placeholder {
   gap: 8px;
   padding: 11px 17px 0;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   flex-wrap: wrap;
 }
 .recipient strong {
@@ -1079,7 +1085,7 @@ textarea::placeholder {
   min-width: 0;
   font-size: 12px;
   font-weight: 450;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .recipient-channel {
   margin-left: auto;
@@ -1103,7 +1109,7 @@ textarea::placeholder {
 }
 .response-editor textarea:disabled {
   background: #fafbfc;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .editor-meta {
   padding: 7px 16px 12px;
@@ -1115,7 +1121,7 @@ textarea::placeholder {
 }
 .editor-meta > span {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -1150,7 +1156,7 @@ textarea::placeholder {
   font-size: 12px;
   font-weight: 550;
   background: #fff;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   white-space: nowrap;
   transition:
     background 120ms,
@@ -1185,7 +1191,7 @@ textarea::placeholder {
 .review-assurance {
   display: flex;
   gap: 7px;
-  color: var(--muted);
+  color: var(--ink-muted);
   padding: 13px 3px 0;
   align-items: flex-start;
 }
@@ -1204,7 +1210,7 @@ textarea::placeholder {
   border: 1px solid #e2e8f1;
   border-radius: 6px;
   margin: 12px 0;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   align-items: flex-start;
   font-size: 12px;
   min-width: 0;
@@ -1256,7 +1262,7 @@ textarea::placeholder {
 }
 .filtered-selection {
   background: #f8faff;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -1287,7 +1293,7 @@ textarea::placeholder {
 }
 .workspace-empty > p {
   max-width: 380px;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: 13px;
 }
 .workspace-empty > .button {
@@ -1323,7 +1329,7 @@ textarea::placeholder {
   font-weight: 600;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .empty-footnote {
   display: flex;
@@ -1331,7 +1337,7 @@ textarea::placeholder {
   gap: 6px;
   margin-top: 27px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .mobile-back {
   display: none !important;
@@ -1371,7 +1377,7 @@ textarea::placeholder {
 }
 .processing-content > p {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .processing-status {
   margin: 22px 0;
@@ -1397,7 +1403,7 @@ textarea::placeholder {
   margin-top: 18px;
   border-radius: 8px;
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .source-availability p {
   margin-top: 6px;
@@ -1447,7 +1453,7 @@ textarea::placeholder {
   font-weight: 550;
 }
 .activity-entry p {
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: 12px;
   margin-top: 6px;
 }
@@ -1459,12 +1465,12 @@ textarea::placeholder {
 }
 .activity-title time {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .activity-entry details {
   margin-top: 12px;
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .activity-entry summary {
   cursor: pointer;
@@ -1479,7 +1485,7 @@ textarea::placeholder {
 }
 .fine-print {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   line-height: 1.6;
 }
 .activity-empty {
@@ -1536,7 +1542,7 @@ textarea::placeholder {
   font-size: 12px;
 }
 .approval-facts dt {
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .approval-facts dd {
   margin: 0;
@@ -1591,7 +1597,7 @@ textarea::placeholder {
 }
 .drawer-body > p {
   font-size: 13px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .evidence-facts {
   display: flex;
@@ -1609,7 +1615,7 @@ textarea::placeholder {
   font-size: 12px;
 }
 .evidence-facts span {
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .evidence-facts strong {
   font-size: 12px;
@@ -1632,7 +1638,7 @@ textarea::placeholder {
 }
 .evidence-section > p {
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   overflow-wrap: anywhere;
 }
 .source-row {
@@ -1665,7 +1671,7 @@ textarea::placeholder {
 }
 .source-row > div > span {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .source-row > .icon {
   color: #8894a5;
@@ -1694,7 +1700,7 @@ textarea::placeholder {
 .narrative p {
   font-size: 12px;
   line-height: 1.65;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .page-scroll {
   height: 100%;
@@ -1721,7 +1727,7 @@ textarea::placeholder {
 }
 .page-heading p {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .scope-pill {
   display: flex;
@@ -1732,7 +1738,7 @@ textarea::placeholder {
   border: 1px solid var(--line);
   border-radius: 6px;
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   white-space: nowrap;
 }
 .insights-stats {
@@ -1758,7 +1764,7 @@ textarea::placeholder {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   font-size: 12px;
 }
 .insight-stat > div .icon {
@@ -1774,7 +1780,7 @@ textarea::placeholder {
 }
 .insight-stat > p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .insights-grid {
   display: grid;
@@ -1801,7 +1807,7 @@ textarea::placeholder {
 }
 .report-section header p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   margin-top: 4px;
 }
 .report-section > header > .icon {
@@ -1817,7 +1823,7 @@ textarea::placeholder {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   margin-bottom: 8px;
   gap: 12px;
 }
@@ -1883,7 +1889,7 @@ textarea::placeholder {
   padding: 14px;
   background: #f7f9fc;
   border-radius: 6px;
-  color: var(--muted);
+  color: var(--ink-muted);
   align-items: flex-start;
 }
 .insight-note p {
@@ -1905,13 +1911,13 @@ textarea::placeholder {
 }
 .service-table-head {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   border-bottom: 1px solid var(--line);
   padding-top: 0;
 }
 .service-table-row {
   font-size: 12px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   border-bottom: 1px solid #edf0f4;
 }
 .service-table-row:last-child {
@@ -1944,7 +1950,7 @@ textarea::placeholder {
   justify-content: space-between;
   gap: 20px;
   padding: 20px 1px;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: 12px;
 }
 .report-footer > span:last-child {
@@ -1967,7 +1973,7 @@ textarea::placeholder {
 }
 .demo-intro p {
   font-size: 14px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
   line-height: 1.8;
 }
 .demo-load {
@@ -1982,7 +1988,7 @@ textarea::placeholder {
 }
 .demo-load > span {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .scenario-grid {
   display: grid;
@@ -2043,7 +2049,7 @@ textarea::placeholder {
 .scenario > p {
   font-size: 12px;
   line-height: 1.8;
-  color: var(--muted);
+  color: var(--ink-muted);
   flex: 1;
 }
 .scenario-sources {
@@ -2057,7 +2063,7 @@ textarea::placeholder {
   background: #f3f5f8;
   border-radius: 4px;
   padding: 4px 6px;
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 .scenario > .button {
   width: 100%;
@@ -2077,7 +2083,7 @@ textarea::placeholder {
   border-top: 1px solid var(--line);
 }
 .demo-principles > div > .icon {
-  color: var(--muted);
+  color: var(--ink-muted);
   margin-bottom: 12px;
 }
 .demo-principles h3 {
@@ -2087,7 +2093,7 @@ textarea::placeholder {
 }
 .demo-principles > div > p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   max-width: 320px;
 }
 .demo-principles ol {
@@ -2111,7 +2117,7 @@ textarea::placeholder {
   width: 23px;
   height: 23px;
   flex-shrink: 0;
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 .demo-principles li strong {
   font-size: 12px;
@@ -2119,7 +2125,7 @@ textarea::placeholder {
 }
 .demo-principles li p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-muted);
   margin-top: 4px;
 }
 .queue-loading {
@@ -2691,7 +2697,7 @@ button:disabled .spinner {
 .environment-tag.neutral {
   background: #f2f4f7;
   border-color: var(--line);
-  color: var(--secondary);
+  color: var(--ink-secondary);
 }
 @media (min-width: 900px) and (max-height: 820px) {
   .detail-content {

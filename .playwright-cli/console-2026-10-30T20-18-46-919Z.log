@@ -1,0 +1,181 @@
+[    8259ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:21550
+[    9699ms] [ERROR] Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s 
+
+Check the render method of `App`. 
+    at ResizablePanel (http://localhost:5174/src/components/ui/resizable.jsx:44:25)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx:20:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[    9774ms] [ERROR] Warning: Unknown event handler property `%s`. It will be ignored.%s onCollapse 
+    at div
+    at Vo (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3784:13)
+    at ResizablePanel (http://localhost:5174/src/components/ui/resizable.jsx:44:25)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx:20:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[    9775ms] [ERROR] Warning: Unknown event handler property `%s`. It will be ignored.%s onExpand 
+    at div
+    at Vo (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3784:13)
+    at ResizablePanel (http://localhost:5174/src/components/ui/resizable.jsx:44:25)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx:20:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[   34767ms] TypeError: Component is not a function
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:11548:26)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:14582:28)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3699:24)
+    at invokeGuardedCallback (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3733:39)
+    at beginWork$1 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19765:15)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19198:20)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19137:13)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19116:15)
+[   34771ms] TypeError: Component is not a function
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:11548:26)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:14582:28)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3699:24)
+    at invokeGuardedCallback (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3733:39)
+    at beginWork$1 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19765:15)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19198:20)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19137:13)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19116:15)
+[   34776ms] TypeError: Component is not a function
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:11548:26)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:14582:28)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3699:24)
+    at invokeGuardedCallback (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3733:39)
+    at beginWork$1 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19765:15)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19198:20)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19137:13)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19116:15)
+[   34776ms] TypeError: Component is not a function
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:11548:26)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:14582:28)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3699:24)
+    at invokeGuardedCallback (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:3733:39)
+    at beginWork$1 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19765:15)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19198:20)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19137:13)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19116:15)
+[   34792ms] [ERROR] The above error occurred in one of your React components:
+
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:21:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx:72:21)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:14031
+[   34792ms] [ERROR] The above error occurred in one of your React components:
+
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:21:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx:72:21)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:14031
+[   34820ms] TypeError: Component is not a function
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:11548:26)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:14582:28)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:15924:22)
+    at beginWork$1 (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19753:22)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19198:20)
+    at workLoopSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19137:13)
+    at renderRootSync (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:19116:15)
+    at recoverFromConcurrentError (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:18879:28)
+    at flushSyncCallbacks (http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:9119:30)
+[   53481ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:21550
+[   53546ms] [ERROR] Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s 
+
+Check the render method of `ForwardRef(ResizablePanel2)`. 
+    at Vo (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3784:13)
+    at ResizablePanel2 (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:45:74)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:21:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx?t=1793391561031:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[   53549ms] [ERROR] Warning: Unknown event handler property `%s`. It will be ignored.%s onCollapse 
+    at div
+    at Vo (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3784:13)
+    at ResizablePanel2 (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:45:74)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:21:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx?t=1793391561031:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[   53549ms] [ERROR] Warning: Unknown event handler property `%s`. It will be ignored.%s onExpand 
+    at div
+    at Vo (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3784:13)
+    at ResizablePanel2 (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:45:74)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:21:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx?t=1793391561031:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[   56023ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:21550
+[   56335ms] [ERROR] Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s 
+
+Check the render method of `ForwardRef(ResizablePanel2)`. 
+    at Vo (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3784:13)
+    at ResizablePanel2 (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:45:74)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:21:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx?t=1793391561031:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[   56352ms] [ERROR] Warning: Unknown event handler property `%s`. It will be ignored.%s onCollapse 
+    at div
+    at Vo (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3784:13)
+    at ResizablePanel2 (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:45:74)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:21:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx?t=1793391561031:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[   56353ms] [ERROR] Warning: Unknown event handler property `%s`. It will be ignored.%s onExpand 
+    at div
+    at Vo (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3784:13)
+    at ResizablePanel2 (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:45:74)
+    at div
+    at _o (http://localhost:5174/node_modules/.vite/deps/react-resizable-panels.js?v=c2a49bd3:3371:13)
+    at ResizablePanelGroup (http://localhost:5174/src/components/ui/resizable.jsx?t=1793391561031:21:3)
+    at div
+    at div
+    at App (http://localhost:5174/src/App.jsx?t=1793391561031:72:21) @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:520
+[  145140ms] [ERROR] ReferenceError: React is not defined
+    at http://localhost:5174/src/components/ui/resizable.jsx?t=1793391671050:44:24 @ http://localhost:5174/@vite/client:173
+[  145155ms] [ERROR] [hmr] Failed to reload /src/components/ui/resizable.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5174/@vite/client:175
+[ 1152274ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:5174/@vite/client:559
+[ 1152392ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:5174/stream:0
+[ 1154878ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:21550
+[ 7439262ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:5174/@vite/client:559
+[ 7439470ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:5174/stream:0
+[ 7442160ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/chunk-3ZJ2S23Y.js?v=c2a49bd3:21550

@@ -1,0 +1,43 @@
+- generic [ref=f6e3]:
+  - link "Skip to workspace" [ref=f6e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=f6e5]:
+    - link "NEXUS home" [ref=f6e6] [cursor=pointer]:
+      - /url: "#inbox"
+      - generic [ref=f6e10]: NEXUS
+    - navigation "Main navigation" [ref=f6e11]:
+      - button "Inbox" [ref=f6e12] [cursor=pointer]
+      - button "Insights" [ref=f6e13] [cursor=pointer]
+    - generic [ref=f6e14]:
+      - generic [ref=f6e15]: Mode unavailable
+      - button "Search tickets and views" [ref=f6e16] [cursor=pointer]
+  - complementary "Ticket queue" [ref=f6e19]:
+    - generic [ref=f6e20]:
+      - generic [ref=f6e21]:
+        - heading "Inbox 0" [level=1] [ref=f6e22]:
+          - text: Inbox
+          - generic [ref=f6e23]: "0"
+        - paragraph [ref=f6e24]: A little clarity for every escalation.
+      - button "Refresh tickets" [ref=f6e25] [cursor=pointer]
+    - generic [ref=f6e29]:
+      - textbox "Search tickets" [ref=f6e34]:
+        - /placeholder: Search tickets…
+      - generic "Ticket status filter" [ref=f6e35]:
+        - button "Open" [pressed] [ref=f6e36] [cursor=pointer]
+        - button "All" [ref=f6e37] [cursor=pointer]
+        - button "Resolved" [ref=f6e38] [cursor=pointer]
+      - generic [ref=f6e39]:
+        - combobox "Filter severity" [ref=f6e43] [cursor=pointer]:
+          - option "All priorities" [selected]
+          - option "Critical"
+          - option "High"
+          - option "Medium"
+          - option "Low"
+        - combobox "Ticket environment" [ref=f6e44] [cursor=pointer]:
+          - option "Workspace" [selected]
+          - option "Imported history"
+    - generic "Loading tickets" [ref=f6e46]
+    - generic [ref=f6e59]: Every response starts with your review.
+  - generic [ref=f6e64]:
+    - heading "Command Palette" [level=2] [ref=f6e65]
+    - paragraph [ref=f6e66]: Search for a command to run...

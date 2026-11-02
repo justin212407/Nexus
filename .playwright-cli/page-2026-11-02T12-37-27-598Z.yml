@@ -1,0 +1,114 @@
+- generic [ref=f6e3]:
+  - link "Skip to workspace" [ref=f6e365] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=f6e5]:
+    - link "NEXUS home" [ref=f6e366] [cursor=pointer]:
+      - /url: "#inbox"
+      - generic [ref=f6e10]: NEXUS
+    - separator
+    - generic [ref=f6e67]: Support workspace
+    - navigation "Main navigation" [ref=f6e367]:
+      - button "Inbox 6" [ref=f6e368] [cursor=pointer]:
+        - text: Inbox
+        - generic [ref=f6e70]: "6"
+      - button "Insights" [ref=f6e369] [cursor=pointer]
+      - button "Demo lab" [ref=f6e370] [cursor=pointer]
+    - generic [ref=f6e14]:
+      - generic "Event stream connected" [ref=f6e371]: Connected
+      - generic [ref=f6e15]: Demo workspace
+      - button "Search tickets and views" [active] [ref=f6e372] [cursor=pointer]:
+        - generic [ref=f6e74]: Search
+        - generic: ⌘K
+  - main [ref=f6e373]:
+    - generic [ref=f6e374]:
+      - generic [ref=f6e375]:
+        - generic [ref=f6e376]:
+          - generic [ref=f6e377]: Workspace overview
+          - heading "Insights" [level=1] [ref=f6e378]
+          - paragraph [ref=f6e379]: Understand the work coming in. Know where to focus next.
+        - generic [ref=f6e380]: Demo · Loaded history
+      - generic [ref=f6e384]:
+        - generic [ref=f6e385]:
+          - generic [ref=f6e386]: Analysed tickets
+          - strong [ref=f6e391]: "6"
+          - paragraph [ref=f6e392]: Saved technical briefs
+        - generic [ref=f6e393]:
+          - generic [ref=f6e394]: Awaiting review
+          - strong [ref=f6e399]: "6"
+          - paragraph [ref=f6e400]: Ready for a human decision
+        - generic [ref=f6e401]:
+          - generic [ref=f6e402]: Escalated
+          - strong [ref=f6e406]: "0"
+          - paragraph [ref=f6e407]: Tickets with a recorded simulation
+        - generic [ref=f6e408]:
+          - generic [ref=f6e409]: Resolved in NEXUS
+          - strong [ref=f6e413]: "0"
+          - paragraph [ref=f6e414]: Workspace resolution only
+      - generic [ref=f6e415]:
+        - generic [ref=f6e416]:
+          - generic [ref=f6e418]:
+            - heading "What’s behind the tickets" [level=2] [ref=f6e419]
+            - paragraph [ref=f6e420]: Generated classifications across 6 tickets
+          - generic [ref=f6e424]:
+            - generic [ref=f6e426]:
+              - generic [ref=f6e427]: Known bug
+              - strong [ref=f6e428]: "2"
+            - generic [ref=f6e432]:
+              - generic [ref=f6e433]: Service degradation
+              - strong [ref=f6e434]: "0"
+            - generic [ref=f6e437]:
+              - generic [ref=f6e438]: User-side issue (suggested)
+              - strong [ref=f6e439]: "2"
+            - generic [ref=f6e443]:
+              - generic [ref=f6e444]: External dependency
+              - strong [ref=f6e445]: "2"
+            - generic [ref=f6e449]:
+              - generic [ref=f6e450]: Undetermined
+              - strong [ref=f6e451]: "0"
+          - paragraph [ref=f6e453]: Classifications are model assessments. Review the evidence before acting.
+        - generic [ref=f6e454]:
+          - generic [ref=f6e456]:
+            - heading "Priority distribution" [level=2] [ref=f6e457]
+            - paragraph [ref=f6e458]: Severity reported in each technical brief
+          - generic [ref=f6e461]:
+            - generic [ref=f6e462]:
+              - generic [ref=f6e463]: critical
+              - strong [ref=f6e466]: "2"
+            - generic [ref=f6e467]:
+              - generic [ref=f6e468]: high
+              - strong [ref=f6e471]: "2"
+            - generic [ref=f6e472]:
+              - generic [ref=f6e473]: medium
+              - strong [ref=f6e475]: "0"
+            - generic [ref=f6e476]:
+              - generic [ref=f6e477]: low
+              - strong [ref=f6e480]: "2"
+          - paragraph [ref=f6e485]: Priority helps you triage. Sending a reply or escalating does not automatically resolve a ticket.
+      - generic [ref=f6e486]:
+        - generic [ref=f6e487]:
+          - generic [ref=f6e488]:
+            - heading "Services in focus" [level=2] [ref=f6e489]
+            - paragraph [ref=f6e490]: Ticket volume by affected service
+          - generic [ref=f6e491]: 2 services
+        - table "Affected services" [ref=f6e492]:
+          - row [ref=f6e493]:
+            - columnheader "Service" [ref=f6e494]
+            - columnheader "Tickets" [ref=f6e495]
+            - columnheader "Critical" [ref=f6e496]
+            - columnheader "Share of tickets" [ref=f6e497]
+          - row [ref=f6e498]:
+            - cell "checkout-api" [ref=f6e499]
+            - cell "4" [ref=f6e504]
+            - cell "—" [ref=f6e505]
+            - cell [ref=f6e506]
+          - row [ref=f6e509]:
+            - cell "payment-gateway" [ref=f6e510]
+            - cell "2" [ref=f6e515]
+            - cell "2" [ref=f6e516]
+            - cell [ref=f6e517]
+      - generic [ref=f6e520]:
+        - generic [ref=f6e521]: Based on 6 unique demo tickets in the loaded history (up to 100 records). Imported history is excluded.
+        - generic [ref=f6e522]: Refreshed Just now
+  - generic [ref=f6e64]:
+    - heading "Command Palette" [level=2] [ref=f6e523]
+    - paragraph [ref=f6e66]: Search for a command to run...

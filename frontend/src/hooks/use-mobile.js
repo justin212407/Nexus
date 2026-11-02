@@ -1,6 +1,8 @@
 import * as React from "react"
 
-const MOBILE_BREAKPOINT = 768
+// NEXUS treats widths below 900px as the stacked mobile layout
+// (.agents/skills/nexus-ui/references/visual-system.md).
+const MOBILE_BREAKPOINT = 900
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState(undefined)

@@ -104,3 +104,66 @@ and deleted in #25.
 - `pytest` - 49 passed, 3 skipped.
 - Dev server smoke test: HTML, `index.css`, and shadcn components all serve correctly.
 
+---
+
+## #19 - App shell: header, resizable queue, command palette
+
+**Commit**: (this commit) `feat(ui): rebuild app shell with shadcn header, resizable queue and command palette`
+**Date**: 2026-11-02
+**Issue**: [#19](https://github.com/justin212407/Nexus/issues/19)
+
+### Changes
+
+- Rebuilt `App.jsx`'s shell with shadcn primitives while keeping all existing logic
+  (`useWorkspace`, `useDrafts`, hash routing, filters, selection, demo loading):
+  - Tailwind header (56px) with brand, workspace label, nav pills (Inbox, Insights, Demo lab),
+    queue collapse toggle, connection status, environment `Badge`, and a Search button.
+  - `ResizablePanelGroup` (react-resizable-panels v4) for the desktop queue/detail split with a
+    collapsible queue panel driven by `panelRef` + `onResize`.
+  - Command palette (`CommandDialog` + cmdk): Go to Inbox/Insights/Demo lab, fuzzy ticket search,
+    and demo scenario triggers (demo mode only). Toggle with Cmd/Ctrl+K or the header button.
+  - Mobile (<900px) stacked queue/detail views via `useIsMobile` (breakpoint changed 768 → 900).
+  - Demo nav and palette entries are gated on `mode === "demo"` per the nexus-ui skill.
+  - Error banner rebuilt with semantic warning tokens; skip link preserved.
+- Moved `use-mobile.js` breakpoint to 900px to match the skill's responsive rules.
+- Renamed the legacy CSS text tokens `--muted`/`--secondary` → `--ink-muted`/`--ink-secondary`
+  because they collided with shadcn's token names and silently overrode `bg-muted`,
+  making command-palette items render dark-on-dark.
+- Fixed the generated `command.jsx` input row: `min-w-0` on the input and `shrink-0` on the
+  addon so the search icon is not clipped.
+- Added `aria-label` to the icon-only Search button (its text is hidden below `md`).
+
+### Why
+
+- The shell is the frame every other screen lives in; the queue/detail split is the operator's
+  primary mental model, so it gets the resizable treatment while secondary views stay full-width.
+- The command palette is the keyboard-first route to any ticket or view, matching the
+  Linear-style interaction principle from the designeer.xyz research.
+
+### Tradeoffs
+
+- **Resizable panel split instead of the literal shadcn `Sidebar` primitive.**
+  The left column is a data queue, not navigation; the shadcn Sidebar is designed for nav items
+  (and the skill warns against filler nav rails). The resizable panel gives the same collapsible,
+  persistent queue with drag control. If we later want the shadcn Sidebar chrome, it is a
+  localized swap.
+- **`use-mobile` breakpoint 900px** instead of shadcn's 768px default - matches the skill's
+  "below 900px, queue and detail become separate views" rule.
+- **Generated component source edited directly** (command.jsx) rather than restyling from App:
+  the clipping bug lives in the primitive; fixing it there keeps every future CommandInput correct.
+- **Legacy token rename** (`--muted` → `--ink-muted`) chosen over moving the shadcn `:root` later
+  in the file, because moving it would invert which system breaks; the legacy CSS keeps its exact
+  rendered output.
+
+### Verification
+
+- `npm run build` passes; `npm test` 14/14; `pytest` 49 passed, 3 skipped.
+- Console errors: 0 after the fixes.
+- Screenshots: `docs/screenshots/19-shell-desktop-1440.png`,
+  `19-shell-desktop-1280.png`, `19-insights.png`, `19-command-palette.png`,
+  `19-queue-collapsed.png`, `19-mobile-390.png`, `19-mobile-detail-390.png`.
+- Screen recording: `docs/screenshots/19-shell-demo.webm` (collapse/expand, Cmd+K, nav switch).
+- Verified interactions: queue collapse (0px) and expand, Cmd/Ctrl+K opens the palette,
+  mobile queue → detail → back, no horizontal scrolling at 390px.
+
+

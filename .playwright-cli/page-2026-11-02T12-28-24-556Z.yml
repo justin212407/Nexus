@@ -1,0 +1,152 @@
+- generic [ref=f3e1]:
+  - generic [ref=f3e3]:
+    - link [ref=f3e152] [cursor=pointer]:
+      - /url: "#main-content"
+      - text: Skip to workspace
+    - banner [ref=f3e5]:
+      - link [ref=f3e153] [cursor=pointer]:
+        - /url: "#inbox"
+        - generic [ref=f3e10]: NEXUS
+      - generic [ref=f3e11]: Support workspace
+      - navigation [ref=f3e154]:
+        - button [ref=f3e155] [cursor=pointer]:
+          - text: Inbox
+          - generic [ref=f3e156]: "6"
+        - button [ref=f3e157] [cursor=pointer]: Insights
+        - button [ref=f3e158] [cursor=pointer]: Demo lab
+      - generic [ref=f3e15]:
+        - generic [ref=f3e159]: Connected
+        - generic [ref=f3e18]: Demo workspace
+        - button [ref=f3e160] [cursor=pointer]:
+          - generic [ref=f3e20]: Search
+          - generic: ⌘K
+    - main [ref=f3e22]:
+      - generic [ref=f3e23]:
+        - generic [ref=f3e24]:
+          - generic [ref=f3e25]:
+            - generic [ref=f3e26]: Workspace overview
+            - heading [level=1] [ref=f3e161]: Insights
+            - paragraph [ref=f3e28]: Understand the work coming in. Know where to focus next.
+          - generic [ref=f3e29]: Demo · Loaded history
+        - generic [ref=f3e33]:
+          - generic [ref=f3e34]:
+            - generic [ref=f3e35]: Analysed tickets
+            - strong [ref=f3e40]: "6"
+            - paragraph [ref=f3e41]: Saved technical briefs
+          - generic [ref=f3e42]:
+            - generic [ref=f3e43]: Awaiting review
+            - strong [ref=f3e48]: "6"
+            - paragraph [ref=f3e49]: Ready for a human decision
+          - generic [ref=f3e50]:
+            - generic [ref=f3e51]: Escalated
+            - strong [ref=f3e55]: "0"
+            - paragraph [ref=f3e56]: Tickets with a recorded simulation
+          - generic [ref=f3e57]:
+            - generic [ref=f3e58]: Resolved in NEXUS
+            - strong [ref=f3e62]: "0"
+            - paragraph [ref=f3e63]: Workspace resolution only
+        - generic [ref=f3e69]:
+          - generic [ref=f3e70]:
+            - generic [ref=f3e72]:
+              - heading [level=2] [ref=f3e162]: What’s behind the tickets
+              - paragraph [ref=f3e74]: Generated classifications across 6 tickets
+            - generic [ref=f3e78]:
+              - generic [ref=f3e80]:
+                - generic [ref=f3e81]: Known bug
+                - strong [ref=f3e82]: "2"
+              - generic [ref=f3e85]:
+                - generic [ref=f3e86]: Service degradation
+                - strong [ref=f3e87]: "0"
+              - generic [ref=f3e90]:
+                - generic [ref=f3e91]: User-side issue (suggested)
+                - strong [ref=f3e92]: "2"
+              - generic [ref=f3e95]:
+                - generic [ref=f3e96]: External dependency
+                - strong [ref=f3e97]: "2"
+              - generic [ref=f3e100]:
+                - generic [ref=f3e101]: Undetermined
+                - strong [ref=f3e102]: "0"
+            - paragraph [ref=f3e104]: Classifications are model assessments. Review the evidence before acting.
+          - generic [ref=f3e105]:
+            - generic [ref=f3e107]:
+              - heading [level=2] [ref=f3e166]: Priority distribution
+              - paragraph [ref=f3e109]: Severity reported in each technical brief
+            - generic [ref=f3e112]:
+              - generic [ref=f3e113]:
+                - generic [ref=f3e114]: critical
+                - strong [ref=f3e116]: "2"
+              - generic [ref=f3e117]:
+                - generic [ref=f3e118]: high
+                - strong [ref=f3e120]: "2"
+              - generic [ref=f3e121]:
+                - generic [ref=f3e122]: medium
+                - strong [ref=f3e124]: "0"
+              - generic [ref=f3e125]:
+                - generic [ref=f3e126]: low
+                - strong [ref=f3e128]: "2"
+            - paragraph [ref=f3e133]: Priority helps you triage. Sending a reply or escalating does not automatically resolve a ticket.
+        - generic [ref=f3e134]:
+          - generic [ref=f3e135]:
+            - generic [ref=f3e136]:
+              - heading [level=2] [ref=f3e170]: Services in focus
+              - paragraph [ref=f3e138]: Ticket volume by affected service
+            - generic [ref=f3e139]: 2 services
+          - table [ref=f3e171]:
+            - row [ref=f3e172]:
+              - columnheader [ref=f3e173]: Service
+              - columnheader [ref=f3e174]: Tickets
+              - columnheader [ref=f3e175]: Critical
+              - columnheader [ref=f3e176]: Share of tickets
+            - row [ref=f3e177]:
+              - cell [ref=f3e178]: checkout-api
+              - cell [ref=f3e183]: "4"
+              - cell [ref=f3e184]: —
+              - cell [ref=f3e185]: 67%
+            - row [ref=f3e188]:
+              - cell [ref=f3e189]: payment-gateway
+              - cell [ref=f3e194]: "2"
+              - cell [ref=f3e195]: "2"
+              - cell [ref=f3e196]: 33%
+        - generic [ref=f3e146]:
+          - generic [ref=f3e147]: Based on 6 unique demo tickets in the loaded history (up to 100 records). Imported history is excluded.
+          - generic [ref=f3e148]: Refreshed Just now
+    - generic [ref=f3e149]:
+      - heading [level=2] [ref=f3e199]: Command Palette
+      - paragraph [ref=f3e151]: Search for a command to run...
+  - dialog "Command Palette" [ref=f3e203]:
+    - generic [ref=f3e204]:
+      - group [ref=f3e207]:
+        - combobox [expanded] [active] [ref=f3e208]
+        - group [ref=f3e209]
+      - listbox "Suggestions" [ref=f3e213]:
+        - generic [ref=f3e214]:
+          - generic [ref=f3e215]: Go to
+          - group "Go to" [ref=f3e216]:
+            - option "Inbox" [selected] [ref=f3e217]
+            - option "Insights" [ref=f3e218]
+            - option "Demo lab" [ref=f3e219]
+          - generic [ref=f3e220]: Tickets
+          - group "Tickets" [ref=f3e221]:
+            - option "demo_payment_1041 Payments are timing out across our workspace" [ref=f3e222]:
+              - generic [ref=f3e223]: demo_payment_1041
+              - generic [ref=f3e224]: Payments are timing out across our workspace
+            - option "demo_login_1040 Unable to sign in after resetting my password" [ref=f3e225]:
+              - generic [ref=f3e226]: demo_login_1040
+              - generic [ref=f3e227]: Unable to sign in after resetting my password
+            - option "demo_payment_1038 Our subscription payment is not going through" [ref=f3e228]:
+              - generic [ref=f3e229]: demo_payment_1038
+              - generic [ref=f3e230]: Our subscription payment is not going through
+            - option "demo_login_1037 Sign-in page keeps returning me to the start" [ref=f3e231]:
+              - generic [ref=f3e232]: demo_login_1037
+              - generic [ref=f3e233]: Sign-in page keeps returning me to the start
+            - option "demo_checkout_1042 Checkout fails after entering card details" [ref=f3e234]:
+              - generic [ref=f3e235]: demo_checkout_1042
+              - generic [ref=f3e236]: Checkout fails after entering card details
+            - option "demo_checkout_1039 Card payment returns an unexpected error" [ref=f3e237]:
+              - generic [ref=f3e238]: demo_checkout_1039
+              - generic [ref=f3e239]: Card payment returns an unexpected error
+          - generic [ref=f3e240]: Demo scenarios
+          - group "Demo scenarios" [ref=f3e241]:
+            - option "Checkout Bug" [ref=f3e242]
+            - option "False Alarm" [ref=f3e243]
+            - option "Stripe Outage" [ref=f3e244]

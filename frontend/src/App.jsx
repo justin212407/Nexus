@@ -392,7 +392,11 @@ export default function App() {
               className="gap-1.5 bg-muted/50 text-muted-foreground"
             >
               <ShieldCheck className="size-3" />
-              {mode === "live" ? "Live workspace" : "Mode unavailable"}
+              {mode === "live"
+                ? "Live workspace"
+                : loading
+                  ? "Checking mode…"
+                  : "Mode unavailable"}
             </Badge>
           )}
           <Button
@@ -478,14 +482,17 @@ export default function App() {
             updatedAt={updatedAt}
           />
         )}
-        {view === "demo" && (
-          <DemoLab
-            mode={mode}
-            loading={demoLoading}
-            onLoad={loadDemo}
-            error={demoError}
-          />
-        )}
+        {view === "demo" &&
+          (mode === "demo" ? (
+            <DemoLab
+              mode={mode}
+              loading={demoLoading}
+              onLoad={loadDemo}
+              error={demoError}
+            />
+          ) : (
+            <DemoUnavailable loading={loading} onBack={() => navigate("inbox")} />
+          ))}
       </div>
 
       <Toaster position="bottom-right" richColors />
@@ -547,6 +554,31 @@ export default function App() {
           </CommandList>
         </Command>
       </CommandDialog>
+    </div>
+  );
+}
+
+function DemoUnavailable({ loading, onBack }) {
+  return (
+    <div className="flex h-full items-center justify-center p-8">
+      <div className="max-w-sm text-center">
+        <span className="mx-auto mb-4 grid size-12 place-items-center rounded-xl bg-muted text-muted-foreground">
+          <FlaskConical className="size-6" />
+        </span>
+        <h2 className="text-lg font-semibold tracking-tight">
+          {loading ? "Checking workspace mode…" : "Demo lab is unavailable"}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {loading
+            ? "Waiting for the backend to report its workspace mode."
+            : "Sample scenarios are available only when the backend confirms demo mode. Nothing here can affect live tickets."}
+        </p>
+        {!loading && (
+          <Button variant="outline" className="mt-4" onClick={onBack}>
+            Back to inbox
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

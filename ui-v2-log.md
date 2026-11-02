@@ -357,6 +357,53 @@ and deleted in #25.
 - Artifacts: `docs/screenshots/23-before-insights-1440.png`,
   `23-after-insights-1440.png`, `23-analytics-flow.webm`.
 
+---
+
+## #24 - Demo/live separation and mode states
+
+**Commit**: (this commit) `feat(ui): guard demo lab behind confirmed demo mode`
+**Date**: 2026-11-02
+**Issue**: [#24](https://github.com/justin212407/Nexus/issues/24)
+
+### Changes
+
+- Demo route guard: `#demo` renders `DemoLab` only when `/tickets/config` confirms
+  `mode === "demo"`. Otherwise it renders a dedicated `DemoUnavailable` state
+  (checking vs unavailable) with a Back to inbox action - no scenario controls exist in
+  live/unknown mode, even via direct URL.
+- Header environment badge distinguishes three states: `Checking mode…` while the config is
+  still loading, `Mode unavailable` after a failed/absent config, and `Live workspace`/`Demo
+  workspace` when known.
+- Demo nav entry, command-palette Demo lab entry, palette demo scenarios and the empty-state
+  demo CTA were already gated on demo mode; this issue closes the route loophole.
+- Simulation copy stays explicit in the review workspace (`review-assurance` note and the
+  success toast both state no external message is sent). Backend `/demo/samples` already
+  returns 409 outside demo mode.
+
+### Why
+
+- The skill requires demo controls to exist only when the backend confirms demo mode, and
+  treats mode loading/error as an unknown state. A visual toggle must not be able to imply
+  isolation the backend is not enforcing.
+
+### Tradeoffs
+
+- **Route guard in the client, not a redirect.** Keeping the URL lets the user retry once
+  the backend recovers or mode loads; the state explains what is happening rather than
+  silently bouncing them.
+- **No extra mode polling.** Mode rides on the existing 15s config refresh; the badge and
+  guard derive from it, so there is one source of truth.
+
+### Verification
+
+- `npm run build` passes; `npm test` 14/14.
+- Mocked `/tickets/config` 500: `#demo` shows the unavailable state, demo controls absent,
+  badge reads "Mode unavailable".
+- Normal demo mode: Demo lab renders, zero console errors.
+- Artifacts: `docs/screenshots/24-before-mode-unknown.png`, `24-after-mode-unknown.png`,
+  `24-after-demo-mode.png`, `24-demo-mode-flow.webm`.
+
+
 
 
 

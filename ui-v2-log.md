@@ -308,6 +308,56 @@ and deleted in #25.
 - Artifacts: `docs/screenshots/22-before-insights-1440.png`,
   `22-after-insights-1440.png`, `22-motion-flow.webm`.
 
+---
+
+## #23 - Analytics: shadcn charts, live metrics, real average confidence
+
+**Commit**: (this commit) `feat(ui): rebuild insights with shadcn charts and real average confidence`
+**Date**: 2026-11-02
+**Issue**: [#23](https://github.com/justin212407/Nexus/issues/23)
+
+### Changes
+
+- Backend: `/stats` now returns `get_avg_confidence()` instead of the hard-coded `75`
+  (the gap called out in `report.md` §8). Updated `tests/test_history_main.py` to assert the
+  real value via monkeypatch.
+- Rebuilt `Insights.jsx` on shadcn `Card`, `Table`, and `Chart` (recharts):
+  - Four stat cards with `NumberTicker` values and scope hints.
+  - Classification and severity horizontal bar charts with count labels, including
+    deliberate `0` labels via `minPointSize` stubs.
+  - Severity bar palette uses surface-friendly tones (red/amber/slate/blue) rather than the
+    dark warning ink token.
+  - Services table with tickets, critical count, share bar and percentage.
+  - Dataset scope in the header (`Demo · Loaded history`) and footer (ticket count, refresh time).
+  - Explicit empty state when no analysed tickets exist.
+- Live recalculation remains driven by the workspace tickets (SSE + history), so completed
+  briefs update every number and chart without an extra poll.
+
+### Why
+
+- The skill's analytics guidance: secondary Insights surface, real counts, labeled horizontal
+  breakdowns, stated scope, no unsupported averages. The previous page already followed that
+  shape; this rebuild moves it onto the component system and fixes the fake confidence number.
+
+### Tradeoffs
+
+- **recharts via the shadcn chart wrapper** instead of Tremor: shadcn chart is already part of
+  our registry workflow and keeps the token story consistent. Bundle cost accepted for a
+  secondary route.
+- **Single-hue classification bars**: the skill says root-cause categories do not each need a
+  saturated colour; severity carries the semantic palette.
+- **Average confidence only appears via `/stats`**: `MetricsBar` (legacy) is untouched in this
+  issue; it is removed in the cleanup issue.
+
+### Verification
+
+- `npm run build` passes; `npm test` 14/14; `pytest` 49 passed, 3 skipped.
+- `/stats` now returns `avg_confidence_pct: 89.7` on the demo DB (was 75).
+- Zero console errors; charts, zero labels, tooltip and services table exercised.
+- Artifacts: `docs/screenshots/23-before-insights-1440.png`,
+  `23-after-insights-1440.png`, `23-analytics-flow.webm`.
+
+
 
 
 

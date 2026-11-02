@@ -1,0 +1,4 @@
+interface:
+  display_name: "NEXUS UI"
+  short_description: "Rebuild the NEXUS support review workspace"
+  default_prompt: "Use $nexus-ui to rebuild the requested NEXUS UI flow using its product research, visual system, and human-reviewed dispatch model."

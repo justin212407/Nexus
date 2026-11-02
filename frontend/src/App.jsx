@@ -1,376 +1,550 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  BarChart3,
+  FlaskConical,
+  Inbox as InboxIcon,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search,
+  ShieldCheck,
+  TriangleAlert,
+} from "lucide-react";
+import Icon, { Logo } from "./components/Icon";
 import TicketQueue from "./components/TicketQueue";
 import TechnicalBrief from "./components/TechnicalBrief";
 import AgentStatus from "./components/AgentStatus";
-import MetricsBar from "./components/MetricsBar";
-import { useSSE } from "./hooks/useSSE";
+import Insights from "./components/Insights";
+import DemoLab from "./components/DemoLab";
+import { useIsMobile } from "./hooks/use-mobile";
+import { useDrafts, useWorkspace } from "./hooks/useWorkspace";
+import {
+  draftKey,
+  request,
+  reviewState,
+  sortTickets,
+  ticketTitle,
+} from "./lib/workspace";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { Separator } from "@/components/ui/separator";
+import { Toaster } from "@/components/ui/sonner";
 
-const SCENARIOS = {
-  checkout_bug: { label: "Checkout Bug" },
-  false_alarm: { label: "False Alarm" },
-  stripe_outage: { label: "Stripe Outage" },
-};
+const SCENARIOS = [
+  ["checkout_bug", "Checkout Bug"],
+  ["false_alarm", "False Alarm"],
+  ["stripe_outage", "Stripe Outage"],
+];
 
-async function triggerScenario(scenarioKey) {
-  const now = Date.now();
-  const payload = {
-    type: "conversation.user.created",
-    data: {
-      item: {
-        id: `ticket_${scenarioKey}_${now}`,
-        user: { email: `${scenarioKey}@example.com` },
-        conversation_message: { body: `${scenarioKey} triggered` },
-        created_at: new Date().toISOString().slice(0, 19),
-        priority: scenarioKey === "checkout_bug" ? "urgent" : "normal",
-        tags: { tags: [] },
-      },
-    },
-  };
-
-  try {
-    await fetch("http://localhost:8000/webhook/intercom", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Hub-Signature-256": "sha256=demo_bypass",
-      },
-      body: JSON.stringify(payload),
-    });
-  } catch (err) {
-    console.error("Trigger failed:", err);
-  }
+function readView() {
+  const value = window.location.hash.slice(1);
+  return ["inbox", "insights", "demo"].includes(value) ? value : "inbox";
 }
 
 export default function App() {
-  const { events, connected, lastError } = useSSE(
-    "http://localhost:8000/stream",
-  );
-  const [mode, setMode] = useState(null);
-  const [triggering, setTriggering] = useState(null);
-  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const workspace = useWorkspace();
+  const {
+    tickets,
+    config,
+    loading,
+    error,
+    refresh,
+    connected,
+    events,
+    updatedAt,
+  } = workspace;
+  const { drafts, updateDraft, persistent } = useDrafts();
+  const isMobile = useIsMobile();
+  const [view, setView] = useState(readView);
+  const [selectedId, setSelectedId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("open");
+  const [severity, setSeverity] = useState("all");
+  const [scope, setScope] = useState("current");
+  const [mobileDetail, setMobileDetail] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(null);
+  const [demoError, setDemoError] = useState(null);
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [queueCollapsed, setQueueCollapsed] = useState(false);
+  const queuePanelRef = useRef(null);
+  const mode = config?.mode;
 
   useEffect(() => {
-    fetch("http://localhost:8000/health")
-      .then((r) => r.json())
-      .then((d) => setMode(d.mode))
-      .catch(() => setMode(null));
+    const handler = () => setView(readView());
+    window.addEventListener("hashchange", handler);
+    return () => window.removeEventListener("hashchange", handler);
   }, []);
 
-  const completedEvent = selectedTicketId
-    ? events.find(
-        (e) => e.event === "completed" && e.ticket_id === selectedTicketId,
-      )
-    : null;
-  const selectedBrief = selectedTicketId
-    ? completedEvent?.brief ||
-      events.find((e) => e.ticket_id === selectedTicketId && e.brief)?.brief ||
-      null
-    : null;
-
   useEffect(() => {
-    if (!selectedTicketId) return;
-    console.debug("[NEXUS] selected ticket lookup", {
-      selectedTicketId,
-      completedEvent,
-      selectedBrief,
-      ticketEvents: events.filter((e) => e.ticket_id === selectedTicketId),
-    });
-  }, [completedEvent, events, selectedBrief, selectedTicketId]);
+    const onKey = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setCommandOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
-  const handleTrigger = async (key) => {
-    setTriggering(key);
-    await triggerScenario(key);
-    setTimeout(() => setTriggering(null), 1500);
+  const navigate = useCallback((next) => {
+    window.location.hash = next;
+    setView(next);
+  }, []);
+
+  const environmentTickets = useMemo(
+    () =>
+      tickets.filter((t) =>
+        scope === "legacy" ? !t.environment : mode && t.environment === mode,
+      ),
+    [tickets, mode, scope],
+  );
+  const sorted = useMemo(
+    () => sortTickets(environmentTickets),
+    [environmentTickets],
+  );
+  const filtered = useMemo(
+    () =>
+      sorted.filter((t) => {
+        const state = reviewState(t);
+        if (filter === "open" && state === "resolved") return false;
+        if (filter === "resolved" && state !== "resolved") return false;
+        if (severity !== "all" && t.brief?.severity !== severity) return false;
+        return (
+          !search ||
+          [
+            t.customer_email,
+            t.ticket_id,
+            t.message_body,
+            t.brief?.summary,
+            t.brief?.affected_service,
+          ].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+        );
+      }),
+    [sorted, filter, severity, search],
+  );
+  useEffect(() => {
+    if (!selectedId && sorted.length) setSelectedId(sorted[0].ticket_id);
+  }, [selectedId, sorted]);
+  const selected = environmentTickets.find((t) => t.ticket_id === selectedId);
+  const position = filtered.findIndex((t) => t.ticket_id === selectedId);
+  const select = (id) => {
+    setSelectedId(id);
+    setMobileDetail(true);
+  };
+  const changeScope = (value) => {
+    setScope(value);
+    setSelectedId(null);
+    setMobileDetail(false);
+  };
+  const currentTickets = tickets.filter((t) => t.environment === mode && mode);
+  const pendingCount = currentTickets.filter((t) =>
+    ["review", "attention"].includes(reviewState(t)),
+  ).length;
+  const loadDemo = async (scenario) => {
+    setDemoLoading(scenario);
+    setDemoError(null);
+    try {
+      const result = await request("/demo/samples", {
+        method: "POST",
+        body: JSON.stringify({ scenario }),
+      });
+      await refresh();
+      setScope("current");
+      setSearch("");
+      setFilter("open");
+      setSeverity("all");
+      setSelectedId(result.ticket_ids[0] || null);
+      setMobileDetail(true);
+      navigate("inbox");
+    } catch (err) {
+      setDemoError(err.message);
+    } finally {
+      setDemoLoading(null);
+    }
+  };
+  const draft = selected
+    ? (drafts[draftKey(selected.environment || "legacy", selected)] ??
+      selected.brief?.draft_customer_response ??
+      "")
+    : "";
+
+  const toggleQueue = () => {
+    if (queueCollapsed) {
+      queuePanelRef.current?.expand();
+    } else {
+      queuePanelRef.current?.collapse();
+    }
+  };
+
+  const filteredSelectionNotice = selected && position < 0 && (
+    <div className="filtered-selection">
+      <Icon name="info" size={15} />
+      This ticket is outside the current filters.
+      <button
+        onClick={() => {
+          setFilter("all");
+          setSeverity("all");
+          setSearch("");
+        }}
+      >
+        Show in queue
+      </button>
+    </div>
+  );
+
+  const detail = selected ? (
+    selected.brief && selected.status !== "failed" ? (
+      <TechnicalBrief
+        key={`${selected.environment}:${selected.ticket_id}`}
+        ticket={selected}
+        response={draft}
+        onResponse={(value) =>
+          updateDraft(
+            draftKey(selected.environment || "legacy", selected),
+            value,
+          )
+        }
+        persistent={persistent}
+        config={config}
+        onAction={refresh}
+        onBack={() => setMobileDetail(false)}
+        onPrevious={
+          position > 0 ? () => select(filtered[position - 1].ticket_id) : null
+        }
+        onNext={
+          position >= 0 && position < filtered.length - 1
+            ? () => select(filtered[position + 1].ticket_id)
+            : null
+        }
+        position={position >= 0 ? position + 1 : "—"}
+        total={filtered.length}
+      />
+    ) : (
+      <div className="processing-view">
+        <button
+          className="button mobile-back"
+          onClick={() => setMobileDetail(false)}
+        >
+          <Icon name="back" />
+          Back to queue
+        </button>
+        <AgentStatus events={events} ticketId={selected.ticket_id} />
+      </div>
+    )
+  ) : (
+    <div className="workspace-empty">
+      <div className="empty-illustration">
+        <Icon name="inbox" size={36} />
+        <span>
+          <Icon name="check" size={14} />
+        </span>
+      </div>
+      <div className="eyebrow">A clearer way to support</div>
+      <h2>{loading ? "Opening your workspace…" : "The next step starts here."}</h2>
+      <p>
+        {loading
+          ? "Loading saved tickets and connecting to new activity."
+          : "Select a ticket to review its response, understand the evidence, and decide what happens next."}
+      </p>
+      {mode === "demo" && !loading && (
+        <button className="button primary" onClick={() => navigate("demo")}>
+          <Icon name="flask" size={16} />
+          Explore the demo
+          <Icon name="arrow" size={16} />
+        </button>
+      )}
+      <span className="empty-footnote">
+        <Icon name="shield" size={14} />
+        Prepared by AI. Reviewed by you.
+      </span>
+    </div>
+  );
+
+  const queueProps = {
+    tickets: filtered,
+    selectedId,
+    onSelect: select,
+    search,
+    onSearch: setSearch,
+    filter,
+    onFilter: setFilter,
+    severity,
+    onSeverity: setSeverity,
+    scope,
+    onScope: changeScope,
+    mode,
+    total: environmentTickets.length,
+    loading,
+    onDemo: () => navigate("demo"),
+    onRefresh: refresh,
   };
 
   return (
-    <div
-      style={{
-        background: "#0a0a0a",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        color: "#fff",
-        fontFamily:
-          "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-      }}
-    >
-      {/* Top navbar */}
-      <header
-        style={{
-          height: 48,
-          borderBottom: "1px solid #1a1a1a",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 24px",
-          position: "sticky",
-          top: 0,
-          zIndex: 50,
+    <div className="flex h-dvh min-h-[420px] flex-col overflow-hidden">
+      <a
+        href="#main-content"
+        className="skip-link"
+        onClick={(event) => {
+          event.preventDefault();
+          document.getElementById("main-content").focus();
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ fontWeight: 800, fontSize: 15 }}>NEXUS</span>
-          <span
-            style={{
-              fontSize: 11,
-              padding: "2px 8px",
-              borderRadius: 6,
-              background:
-                mode === "demo"
-                  ? "rgba(34,197,94,0.08)"
-                  : "rgba(239,68,68,0.08)",
-              color: mode === "demo" ? "#22c55e" : "#ef4444",
-              border: `1px solid ${mode === "demo" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)"}`,
-              fontWeight: 600,
-            }}
+        Skip to workspace
+      </a>
+      <header className="sticky top-0 z-20 flex min-h-14 flex-wrap items-center gap-x-4 gap-y-1 border-b bg-card px-4 py-1.5 md:px-6">
+        <a
+          className="flex items-center gap-2 text-[15px] font-bold tracking-wide"
+          href="#inbox"
+          aria-label="NEXUS home"
+        >
+          <Logo />
+          <span>NEXUS</span>
+        </a>
+        <Separator orientation="vertical" className="hidden h-5 md:block" />
+        <span className="hidden text-[13px] text-muted-foreground md:inline">
+          Support workspace
+        </span>
+        {view === "inbox" && !isMobile && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={toggleQueue}
+            aria-label={queueCollapsed ? "Expand queue" : "Collapse queue"}
           >
-            {mode === "demo" ? "DEMO" : mode === "live" ? "LIVE" : "..."}
-          </span>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              color: connected ? "#22c55e" : "#666",
-            }}
-          >
-            <div
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: 999,
-                background: connected ? "#22c55e" : "#444",
-              }}
-            />
-            <div style={{ color: "#888" }}>
-              {connected ? "Connected" : "Connecting"}
-            </div>
-          </div>
-        </div>
-
-        <div style={{ display: "flex", gap: 8 }}>
-          {Object.keys(SCENARIOS).map((key) => (
-            <button
-              key={key}
-              onClick={() => handleTrigger(key)}
-              disabled={triggering === key}
-              onMouseEnter={(e) => {
-                if (triggering === key) return;
-                e.currentTarget.style.background = "rgba(59,130,246,0.08)";
-                e.currentTarget.style.borderColor = "#3b82f6";
-                e.currentTarget.style.color = "#fff";
-              }}
-              onMouseLeave={(e) => {
-                if (triggering === key) return;
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.borderColor = "#2a2a2a";
-                e.currentTarget.style.color = "#888";
-              }}
-              style={{
-                transition: "border-color 0.15s, color 0.15s, background 0.15s",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "6px 12px",
-                borderRadius: 8,
-                border: `1px solid ${triggering === key ? "#2a2a2a" : "#2a2a2a"}`,
-                background: triggering === key ? "#111" : "transparent",
-                color: triggering === key ? "#fff" : "#888",
-                fontWeight: 700,
-              }}
+            {queueCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+          </Button>
+        )}
+        <nav
+          className="order-last flex w-full items-center justify-center gap-1 sm:order-none sm:w-auto"
+          aria-label="Main navigation"
+        >
+          {[
+            { id: "inbox", label: "Inbox", icon: InboxIcon },
+            { id: "insights", label: "Insights", icon: BarChart3 },
+            ...(mode === "demo"
+              ? [{ id: "demo", label: "Demo lab", icon: FlaskConical }]
+              : []),
+          ].map(({ id, label, icon: NavIcon }) => (
+            <Button
+              key={id}
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(id)}
+              className={
+                view === id ? "bg-accent text-accent-foreground" : undefined
+              }
+              aria-current={view === id ? "page" : undefined}
             >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 999,
-                  background: "#3b82f6",
-                }}
-              />
-              {triggering === key ? "Sending..." : SCENARIOS[key].label}
-            </button>
+              <NavIcon />
+              {label}
+              {id === "inbox" && pendingCount > 0 && (
+                <span className="rounded-md bg-primary px-1.5 text-[11px] font-semibold leading-4 text-primary-foreground">
+                  {pendingCount}
+                </span>
+              )}
+            </Button>
           ))}
+        </nav>
+        <div className="ml-auto flex items-center gap-2 md:gap-3">
+          <span
+            className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex"
+            title={
+              connected
+                ? "Event stream connected"
+                : "Waiting for the event stream; saved tickets remain available"
+            }
+          >
+            <span
+              className={`size-1.5 rounded-full ${
+                connected
+                  ? "bg-emerald-500"
+                  : "animate-pulse bg-muted-foreground/50"
+              }`}
+            />
+            {connected ? "Connected" : "Reconnecting"}
+          </span>
+          {mode === "demo" ? (
+            <Badge
+              variant="outline"
+              className="gap-1.5 bg-demo-foreground text-demo"
+            >
+              <FlaskConical className="size-3" />
+              Demo workspace
+            </Badge>
+          ) : (
+            <Badge
+              variant="outline"
+              className="gap-1.5 bg-muted/50 text-muted-foreground"
+            >
+              <ShieldCheck className="size-3" />
+              {mode === "live" ? "Live workspace" : "Mode unavailable"}
+            </Badge>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 text-muted-foreground"
+            onClick={() => setCommandOpen(true)}
+            aria-label="Search tickets and views"
+          >
+            <Search className="size-3.5" />
+            <span className="hidden md:inline">Search</span>
+            <kbd className="pointer-events-none hidden rounded bg-muted px-1.5 font-mono text-[10px] md:inline">
+              ⌘K
+            </kbd>
+          </Button>
         </div>
       </header>
-
-      {lastError && (
+      {error && (
         <div
-          style={{
-            background: "rgba(234,179,8,0.08)",
-            padding: "8px 24px",
-            color: "#eab308",
-          }}
+          role="alert"
+          className="flex flex-wrap items-center gap-2 border-b bg-warning-foreground px-6 py-2 text-xs text-warning"
         >
-          {lastError}
+          <TriangleAlert className="size-4 shrink-0" />
+          <span>
+            {error} {tickets.length ? "Showing the last loaded tickets." : ""}
+          </span>
+          <Button
+            variant="link"
+            size="xs"
+            className="underline"
+            onClick={refresh}
+          >
+            Try again
+          </Button>
         </div>
       )}
-
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <aside
-          style={{
-            width: 320,
-            minWidth: 320,
-            borderRight: "1px solid #1a1a1a",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div
-            style={{
-              padding: "16px 20px",
-              borderBottom: "1px solid #1a1a1a",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: "#888",
-                textTransform: "uppercase",
-              }}
-            >
-              Incidents
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                color: "#555",
-                background: "#111",
-                padding: "6px 10px",
-                borderRadius: 999,
-                border: "1px solid #222",
-              }}
-            >
-              {events.filter((e) => e.event === "started").length}
-            </div>
-          </div>
-          <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
-            <TicketQueue
-              events={events}
-              onSelectTicket={setSelectedTicketId}
-              selectedTicketId={selectedTicketId}
-            />
-          </div>
-        </aside>
-
-        <main style={{ flex: 1, overflow: "auto", padding: 24 }}>
-          {selectedTicketId && selectedBrief ? (
-            <TechnicalBrief brief={selectedBrief} />
-          ) : selectedTicketId && !selectedBrief ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: 200,
-              }}
-            >
-              <div style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    width: 20,
-                    height: 20,
-                    border: "2px solid #222",
-                    borderTopColor: "#3b82f6",
-                    borderRadius: 999,
-                    animation: "spin 0.8s linear infinite",
-                    margin: "0 auto 12px",
-                  }}
-                />
-                <div style={{ color: "#555", fontSize: 13 }}>
-                  Processing pipeline...
-                </div>
+      <div
+        className="min-h-0 flex-1 outline-none"
+        id="main-content"
+        tabIndex={-1}
+      >
+        {view === "inbox" &&
+          (isMobile ? (
+            mobileDetail && selected ? (
+              <div className="flex h-full min-h-0 min-w-0 flex-col bg-card">
+                {filteredSelectionNotice}
+                {detail}
               </div>
-            </div>
+            ) : (
+              <div className="h-full">
+                <TicketQueue {...queueProps} />
+              </div>
+            )
           ) : (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: 300,
-              }}
-            >
-              <div style={{ textAlign: "center", maxWidth: 380 }}>
-                <div style={{ textAlign: "center", maxWidth: "280px" }}>
-                  <div
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      background: "#111",
-                      border: "1px solid #1f1f1f",
-                      borderRadius: "10px",
-                      margin: "0 auto 16px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#333"
-                      strokeWidth="1.5"
-                    >
-                      <path d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
-                    </svg>
-                  </div>
-                  <p
-                    style={{
-                      color: "#fff",
-                      fontSize: "14px",
-                      fontWeight: 500,
-                      marginBottom: "6px",
-                    }}
-                  >
-                    No incident selected
-                  </p>
-                  <p
-                    style={{
-                      color: "#444",
-                      fontSize: "12px",
-                      lineHeight: "1.6",
-                    }}
-                  >
-                    Trigger a scenario using the buttons above,
-                    <br />
-                    then click an incident to view the analysis.
-                  </p>
+            <ResizablePanelGroup orientation="horizontal" className="h-full">
+              <ResizablePanel
+                panelRef={queuePanelRef}
+                defaultSize="24%"
+                minSize="19%"
+                maxSize="34%"
+                collapsible
+                collapsedSize="0%"
+                onResize={(size) => setQueueCollapsed(size.asPercentage <= 1)}
+                className="overflow-hidden"
+              >
+                <div className="flex h-full min-h-0 flex-col [&>aside]:flex-1">
+                  <TicketQueue {...queueProps} />
                 </div>
-              </div>
-            </div>
-          )}
-        </main>
-
-        <aside
-          style={{
-            width: 260,
-            minWidth: 260,
-            borderLeft: "1px solid #1a1a1a",
-            padding: 16,
-          }}
-        >
-          <div
-            style={{
-              marginBottom: 12,
-              color: "#888",
-              fontWeight: 700,
-              textTransform: "uppercase",
-            }}
-          >
-            Analytics
-          </div>
-          <MetricsBar events={events} />
-        </aside>
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize="76%">
+                <div className="flex h-full min-h-0 min-w-0 flex-col bg-card">
+                  {filteredSelectionNotice}
+                  {detail}
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          ))}
+        {view === "insights" && (
+          <Insights
+            tickets={currentTickets}
+            mode={mode}
+            updatedAt={updatedAt}
+          />
+        )}
+        {view === "demo" && (
+          <DemoLab
+            mode={mode}
+            loading={demoLoading}
+            onLoad={loadDemo}
+            error={demoError}
+          />
+        )}
       </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } } ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; } * { box-sizing: border-box; }`}</style>
+      <Toaster position="bottom-right" richColors />
+
+      <CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
+        <Command>
+          <CommandInput placeholder="Search tickets, jump to a view, or run a demo scenario…" />
+          <CommandList>
+          <CommandEmpty>No results.</CommandEmpty>
+          <CommandGroup heading="Go to">
+            <CommandItem onSelect={() => navigate("inbox")}>
+              <InboxIcon className="size-4" />
+              Inbox
+            </CommandItem>
+            <CommandItem onSelect={() => navigate("insights")}>
+              <BarChart3 className="size-4" />
+              Insights
+            </CommandItem>
+            {mode === "demo" && (
+              <CommandItem onSelect={() => navigate("demo")}>
+                <FlaskConical className="size-4" />
+                Demo lab
+              </CommandItem>
+            )}
+          </CommandGroup>
+          {environmentTickets.length > 0 && (
+            <CommandGroup heading="Tickets">
+              {environmentTickets.slice(0, 8).map((ticket) => (
+                <CommandItem
+                  key={ticket.ticket_id}
+                  value={`${ticket.ticket_id} ${ticket.customer_email} ${
+                    ticket.brief?.summary ?? ""
+                  } ${ticket.brief?.affected_service ?? ""}`}
+                  onSelect={() => {
+                    select(ticket.ticket_id);
+                    navigate("inbox");
+                  }}
+                >
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {ticket.ticket_id}
+                  </span>
+                  <span className="truncate">
+                    {ticketTitle(ticket) || ticket.customer_email}
+                  </span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+          {mode === "demo" && (
+            <CommandGroup heading="Demo scenarios">
+              {SCENARIOS.map(([key, label]) => (
+                <CommandItem key={key} onSelect={() => loadDemo(key)}>
+                  <FlaskConical className="size-4" />
+                  {label}
+                </CommandItem>
+              ))}
+          </CommandGroup>
+        )}
+          </CommandList>
+        </Command>
+      </CommandDialog>
     </div>
   );
 }

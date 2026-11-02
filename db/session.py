@@ -14,6 +14,18 @@ def init_db() -> None:
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
     conn.execute(CREATE_INCIDENTS_TABLE)
+    # Review metadata is separate from legacy incidents and dispatch flags.
+    conn.execute("""CREATE TABLE IF NOT EXISTS ticket_reviews (
+        ticket_id TEXT PRIMARY KEY REFERENCES incidents(ticket_id),
+        environment TEXT NOT NULL, message_body TEXT NOT NULL,
+        received_at TEXT NOT NULL, resolved_at TEXT
+    )""")
+    conn.execute("""CREATE TABLE IF NOT EXISTS review_actions (
+        request_id TEXT PRIMARY KEY,
+        ticket_id TEXT NOT NULL REFERENCES ticket_reviews(ticket_id),
+        action TEXT NOT NULL, content TEXT NOT NULL, destination TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+    )""")
     for stmt in CREATE_INDEXES:
         conn.execute(stmt)
     conn.commit()

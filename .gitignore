@@ -13,4 +13,16 @@ env1/
 skills/
 skills-docs/
 
+# Keep the project UI skill versioned; other skill installs remain local.
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/nexus-ui/
 
+# Local agent tooling state.
+.commandcode/
+.lavish/
+
+
+
+# Playwright CLI session artifacts
+.playwright-cli/

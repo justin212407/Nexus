@@ -166,4 +166,61 @@ and deleted in #25.
 - Verified interactions: queue collapse (0px) and expand, Cmd/Ctrl+K opens the palette,
   mobile queue → detail → back, no horizontal scrolling at 390px.
 
+---
+
+## #21 - Review workspace: shadcn tabs, editor, approval dialog, toasts
+
+**Commit**: (this commit) `feat(ui): rebuild review workspace with shadcn tabs, editor and approval dialog`
+**Date**: 2026-11-02
+**Issue**: [#21](https://github.com/justin212407/Nexus/issues/21)
+
+### Changes
+
+- Rebuilt `TechnicalBrief.jsx` on shadcn primitives with all existing logic preserved
+  (`prepare`/`confirm`, request-ID retry, double-submit guard, draft dirtiness,
+  approval invalidation on content/destination change, demo-only actions):
+  - `Tabs` (line variant) for Conversation / Activity with the approved-content disclosure.
+  - `Textarea` composer in a bounded card with AI-drafted label, recipient row,
+    edited indicator + Restore AI draft.
+  - `Button` actions: Review reply (primary), Escalate (ghost), Mark resolved (ghost, right).
+  - `Dialog` approval preview with ticket, destination, action, exact content,
+    Cancel and action-specific confirm labels; error alert keeps retry copy.
+  - `Sonner` toast on success/failure, in addition to the persistent inline status notice
+    (`role="status"`) and Activity record.
+  - `Badge` for severity/imported history; semantic state dot.
+- Mounted `<Toaster />` in `App.jsx`.
+- Fixed generated `tabs.jsx` orientation variants: Base UI emits `data-orientation="horizontal"`
+  but the generated classes used Tailwind's `data-horizontal:` literal-attribute variant,
+  so the tab list and panel laid out side-by-side. Replaced them with
+  `group-data-[orientation=...]/tabs:` variants.
+- Made the generated `Button` forwardRefs so Base UI's `render` prop (dialog close) attaches
+  its ref without the "Function components cannot be given refs" warning.
+
+### Why
+
+- The review workspace is the product's core decision surface; its primitives must match
+  the shell's design system and support keyboard/dialog semantics without custom modal code.
+- Keeping every behavior identical means the existing behavioral tests continue to guard
+  approval binding, retry semantics and action availability.
+
+### Tradeoffs
+
+- **Kept `EvidencePanel` (custom drawer) unchanged** rather than rebuilding it with shadcn
+  `Sheet` in this issue. It already satisfies the evidence-disclosure rules; swapping it is
+  cheap later and avoids widening this PR's risk. Tracked for #25 visual QA.
+- **Sonner toasts added alongside the inline notice** instead of replacing it - the skill
+  requires a persistent record of action outcomes; toasts alone would violate that.
+- **Dialog via Base UI** instead of the previous custom `Modal`: less code, correct focus
+  handling. Verified the existing dialog tests still pass unchanged.
+
+### Verification
+
+- `npm run build` passes; `npm test` 14/14 (including approval-cancel, double-submit,
+  invalidation, retry and disabled-action tests); `pytest` 49 passed, 3 skipped.
+- Console errors: 0.
+- Artifacts: `docs/screenshots/21-before-review-1440.png`, `21-before-approval.png`,
+  `21-after-review-1440.png`, `21-after-approval.png`, `21-after-activity.png`,
+  `21-after-mobile.png`, `21-review-flow.webm`.
+
+
 

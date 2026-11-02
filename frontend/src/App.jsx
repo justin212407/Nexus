@@ -41,6 +41,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Separator } from "@/components/ui/separator";
+import { Toaster } from "@/components/ui/sonner";
 
 const SCENARIOS = [
   ["checkout_bug", "Checkout Bug"],
@@ -484,6 +485,8 @@ export default function App() {
           />
         )}
       </div>
+
+      <Toaster position="bottom-right" richColors />
 
       <CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
         <Command>

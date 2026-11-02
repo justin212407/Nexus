@@ -24,6 +24,7 @@ def test_stats_endpoint_returns_required_breakdowns(client, monkeypatch):
         return {column: 1}
 
     monkeypatch.setattr(history, "get_stats", fake_get_stats)
+    monkeypatch.setattr(history, "get_avg_confidence", lambda: 82.5)
 
     response = client.get("/stats")
 
@@ -33,7 +34,7 @@ def test_stats_endpoint_returns_required_breakdowns(client, monkeypatch):
     assert stats["severity_breakdown"] == {"severity": 1}
     assert stats["top_service"] == "affected_service"
     assert stats["total_incidents"] == 1
-    assert stats["avg_confidence_pct"] == 75
+    assert stats["avg_confidence_pct"] == 82.5
 
 
 def test_health_reports_ok_and_mode(client, monkeypatch):

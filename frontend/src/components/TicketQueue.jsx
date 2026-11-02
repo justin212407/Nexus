@@ -52,10 +52,10 @@ function TicketRow({ ticket, selected, onSelect }) {
     <button
       onClick={() => onSelect(ticket.ticket_id)}
       aria-current={selected ? "true" : undefined}
-      className={`block w-full border-b border-l-2 px-5 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset ${
+      className={`block w-full border-b border-l-2 px-5 py-3 text-left transition-[background-color,box-shadow] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset ${
         selected
           ? "border-l-primary bg-accent"
-          : "border-l-transparent hover:bg-muted/50"
+          : "border-l-transparent hover:bg-muted/50 hover:shadow-[inset_0_1px_0_rgba(16,24,40,0.03)]"
       }`}
     >
       <div className="flex items-center gap-2">

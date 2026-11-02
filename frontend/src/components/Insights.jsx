@@ -1,5 +1,6 @@
 import React from "react";
 import Icon from "./Icon";
+import NumberTicker from "./motion/NumberTicker";
 import {
   ROOT_CAUSES,
   reviewState,
@@ -74,7 +75,9 @@ export default function Insights({ tickets, mode, updatedAt }) {
                 <span>{label}</span>
                 <Icon name={icon} size={17} />
               </div>
-              <strong>{value.toLocaleString()}</strong>
+              <strong>
+                <NumberTicker value={value} />
+              </strong>
               <p>{hint}</p>
             </section>
           ))}

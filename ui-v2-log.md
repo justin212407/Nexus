@@ -264,6 +264,51 @@ and deleted in #25.
 - Artifacts: `docs/screenshots/20-before-queue-1440.png`, `20-after-queue-1440.png`,
   `20-after-queue-390.png`, `20-queue-flow.webm`.
 
+---
+
+## #22 - Motion polish: tickers, spotlight, hover transitions
+
+**Commit**: (this commit) `feat(ui): add motion polish with number tickers, spotlight and hover transitions`
+**Date**: 2026-11-02
+**Issue**: [#22](https://github.com/justin212407/Nexus/issues/22)
+
+### Changes
+
+- Added `motion` (motion.dev, v14) as the animation runtime.
+- `components/motion/NumberTicker.jsx` - Aceternity-style count-up that animates when in view,
+  formats with `toLocaleString`, and jumps straight to the value under reduced motion.
+- `components/motion/Spotlight.jsx` - subtle ambient radial spotlight for empty states only
+  (decorative, pointer-events-none, static under reduced motion).
+- Insights stat values now use the ticker.
+- Queue rows: 150ms background/shadow transition plus a restrained inset hover shadow
+  (Aceternity card-hover principle, kept subtle for a productivity surface).
+- Existing Base UI dialog enter/exit animation (`data-open:animate-in fade-in zoom-in-95`,
+  100ms) verified as-is; skeleton pulse retained.
+
+### Why
+
+- The designeer.xyz inspiration (Linear / Emil Kowalski direction) is about purposeful,
+  quick motion - it should communicate state changes, not decorate a workspace.
+- The ticker makes metric changes legible without a table of numbers shifting silently.
+
+### Tradeoffs
+
+- **No `framer-motion`-heavy layout animation on list rows.** Layout animations on a live
+  SSE list risk fighting scroll position and focus; the skill requires selection/scroll
+  stability while updates arrive. Hover and dialog motion carry the polish instead.
+- **Spotlight restricted to the empty state.** A persistent background effect would compete
+  with evidence reading on the review surface.
+- **Reduced motion handled twice**: global CSS zeroes CSS animations, and the motion
+  components consult `useReducedMotion` so JS-driven values render immediately.
+
+### Verification
+
+- `npm run build` passes; `npm test` 14/14; zero console errors.
+- Recording shows the Insights count-up, queue hover transition and dialog animation.
+- Artifacts: `docs/screenshots/22-before-insights-1440.png`,
+  `22-after-insights-1440.png`, `22-motion-flow.webm`.
+
+
 
 
 

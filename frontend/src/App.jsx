@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/resizable";
 import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
+import Spotlight from "./components/motion/Spotlight";
 
 const SCENARIOS = [
   ["checkout_bug", "Checkout Bug"],
@@ -245,7 +246,8 @@ export default function App() {
       </div>
     )
   ) : (
-    <div className="workspace-empty">
+    <div className="workspace-empty relative overflow-hidden">
+      <Spotlight className="-z-10" />
       <div className="empty-illustration">
         <Icon name="inbox" size={36} />
         <span>

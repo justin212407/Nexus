@@ -222,5 +222,48 @@ and deleted in #25.
   `21-after-review-1440.png`, `21-after-approval.png`, `21-after-activity.png`,
   `21-after-mobile.png`, `21-review-flow.webm`.
 
+---
+
+## #20 - Ticket queue: shadcn rows, filters, skeletons
+
+**Commit**: (this commit) `feat(ui): rebuild ticket queue with shadcn rows, filters and skeletons`
+**Date**: 2026-11-02
+**Issue**: [#20](https://github.com/justin212407/Nexus/issues/20)
+
+### Changes
+
+- Rebuilt `TicketQueue.jsx` with Tailwind + shadcn primitives, keeping the same props contract:
+  - Search `Input` with icon and clear action.
+  - Status `Tabs` (line variant) for Open / All / Resolved.
+  - Severity and environment `Select`s with explicit `items` label maps.
+  - Grouped rows (status → severity → recency order comes from `sortTickets`), sticky group
+    headers with status dot and count, two-line subject clamp, mono ticket code, severity ink.
+  - Selected row: tinted accent + persistent left accent bar + `aria-current`.
+  - `Skeleton` loading rows; deliberate empty states (filtered vs caught-up vs demo CTA).
+  - Footer assurance line.
+- Fixed the Select triggers showing raw values (`all`, `current`); Base UI needs an `items`
+  label map for `SelectValue` to render labels.
+
+### Why
+
+- The queue is the operator's entry point; shadcn rows keep density while matching the shell.
+- Explicit label maps avoid leaking internal filter keys into the interface.
+
+### Tradeoffs
+
+- **List of card-like rows instead of shadcn DataTable** (as flagged during planning):
+  a live SSE-fed triage list with grouped status sections reads better as rows; DataTable's
+  sorting/faceting machinery would duplicate state we already own in `sortTickets`.
+- **Native-like compact Selects** styled borderless inside the filter row to keep queue density;
+  they still use shadcn Select for consistent keyboard/menu behavior.
+
+### Verification
+
+- `npm run build` passes; `npm test` 14/14; zero console errors.
+- Search filtering, severity filtering, ticket selection and refresh exercised (recording).
+- Artifacts: `docs/screenshots/20-before-queue-1440.png`, `20-after-queue-1440.png`,
+  `20-after-queue-390.png`, `20-queue-flow.webm`.
+
+
 
 

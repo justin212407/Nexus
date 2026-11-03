@@ -458,6 +458,50 @@ and deleted in #25.
   `25-before-demo-lab.png`, `25-after-demo-lab.png`, `25-after-review-1440.png`,
   `25-after-mobile.png`, `25-cleanup-flow.webm`.
 
+---
+
+## Epic wrap-up (#17)
+
+**Commit**: (this commit) `docs(ui): add epic verification artifacts and wrap-up`
+**Date**: 2026-11-02
+**Issue**: [#17](https://github.com/justin212407/Nexus/issues/17)
+
+### What shipped
+
+| Issue | Change | PR |
+| --- | --- | --- |
+| #18 | shadcn/ui + Tailwind v4 + NEXUS tokens, Geist, 25 components | on `ui-revamp` (commit `3074895`) |
+| #19 | Shell: header, resizable queue, command palette (Cmd+K), mobile stack | on `ui-revamp` (commit `58b9a19`) |
+| #21 | Review workspace: tabs, editor, approval dialog, Sonner | #26 |
+| #20 | Queue: shadcn rows, filters, skeletons | #27 |
+| #22 | Motion: number tickers, spotlight, hover transitions | #28 |
+| #23 | Insights: shadcn charts, real average confidence | #29 |
+| #24 | Demo/live separation and mode states | #30 |
+| #25 | Cleanup: remaining surfaces rebuilt, legacy CSS purged (2,700 → 280 lines) | #31 |
+
+### Final state
+
+- One design system: NEXUS tokens mapped into shadcn CSS variables, one stylesheet.
+- Every screen runs on owned shadcn source in `src/components/ui/`.
+- Queue → review → approve → dispatch flow with request-bound approvals, draft isolation,
+  Sonner + inline outcome records, and demo-only actions.
+- Backend contract unchanged except `/stats` now returns the real average confidence.
+
+### Tradeoffs carried forward
+
+- Base UI primitives (shadcn default) are newer than Radix; the source is vendored so fixes
+  are local (we already patched tabs orientation, dialog refs, command input clipping).
+- The resizable separator cannot be labelled (vendor ignores attributes); documented.
+- `Icon.jsx` remains for the brand mark only.
+
+### Verification
+
+- `npm run build` passes; `npm test` 14/14; `pytest` 49 passed, 3 skipped.
+- Zero console errors across every view at 1440x900, 1280x800 and 390x844.
+- Epic artifacts: `docs/screenshots/epic-before-main-1440.png`,
+  `epic-after-1440.png`, `epic-tour.webm`.
+
+
 
 
 

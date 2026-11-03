@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.webhook import router as webhook_router
 from api.history import router as history_router
 from api.stream import router as stream_router
+from api.actions import router as actions_router
+from api.demo import router as demo_router
 from db.session import init_db
 from config import settings
 
@@ -24,6 +26,8 @@ app.add_middleware(
 app.include_router(webhook_router)
 app.include_router(history_router)
 app.include_router(stream_router)
+app.include_router(actions_router)
+app.include_router(demo_router)
 
 
 @app.on_event("startup")

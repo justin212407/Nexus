@@ -1,45 +1,25 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export function useSSE(url) {
   const [events, setEvents] = useState([]);
   const [connected, setConnected] = useState(false);
-  const [lastError, setLastError] = useState(null);
-  const esRef = useRef(null);
-
+  const [connectionEpoch, setConnectionEpoch] = useState(0);
   useEffect(() => {
-    function connect() {
-      const es = new EventSource(url);
-      esRef.current = es;
-
-      es.onopen = () => {
-        setConnected(true);
-        setLastError(null);
-      };
-
-      es.onmessage = (e) => {
-        try {
-          const data = JSON.parse(e.data);
-          setEvents((prev) => [...prev, data]);
-        } catch {
-          // ignore malformed events
-        }
-      };
-
-      es.onerror = () => {
-        setConnected(false);
-        setLastError("Connection lost");
-        es.close();
-        // Auto-reconnect after 3 seconds
-        setTimeout(connect, 3000);
-      };
-    }
-
-    connect();
-
-    return () => {
-      if (esRef.current) esRef.current.close();
+    const source = new EventSource(url);
+    source.onopen = () => {
+      setConnected(true);
+      setConnectionEpoch((n) => n + 1);
     };
+    source.onerror = () => setConnected(false); // EventSource owns reconnection and cleanup.
+    source.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        setEvents((previous) => [...previous.slice(-499), data]);
+      } catch {
+        /* Ignore malformed transport frames. */
+      }
+    };
+    return () => source.close();
   }, [url]);
-
-  return { events, connected, lastError };
+  return { events, connected, connectionEpoch };
 }

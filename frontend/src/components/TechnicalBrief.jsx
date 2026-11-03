@@ -10,7 +10,6 @@ import {
   FlaskConical,
   Hash,
   Mail,
-  RotateCcw,
   Send,
   ShieldCheck,
   Sparkles,
@@ -175,7 +174,7 @@ export default function TechnicalBrief({
           <Button
             variant="ghost"
             size="icon-sm"
-            className="mobile-back"
+            className="hidden max-[899px]:inline-flex"
             onClick={onBack}
             aria-label="Back to queue"
           >

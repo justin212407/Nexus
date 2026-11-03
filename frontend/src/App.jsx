@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowLeft,
+  ArrowRight,
   BarChart3,
+  Check,
   FlaskConical,
   Inbox as InboxIcon,
   PanelLeftClose,
@@ -9,7 +12,7 @@ import {
   ShieldCheck,
   TriangleAlert,
 } from "lucide-react";
-import Icon, { Logo } from "./components/Icon";
+import { Logo } from "./components/Icon";
 import TicketQueue from "./components/TicketQueue";
 import TechnicalBrief from "./components/TechnicalBrief";
 import AgentStatus from "./components/AgentStatus";
@@ -191,10 +194,13 @@ export default function App() {
   };
 
   const filteredSelectionNotice = selected && position < 0 && (
-    <div className="filtered-selection">
-      <Icon name="info" size={15} />
+    <div className="flex flex-wrap items-center gap-2 border-b bg-accent/60 px-6 py-2 text-xs text-ink-secondary">
+      <TriangleAlert className="size-3.5 shrink-0" />
       This ticket is outside the current filters.
-      <button
+      <Button
+        variant="link"
+        size="xs"
+        className="h-auto p-0 text-xs"
         onClick={() => {
           setFilter("all");
           setSeverity("all");
@@ -202,7 +208,7 @@ export default function App() {
         }}
       >
         Show in queue
-      </button>
+      </Button>
     </div>
   );
 
@@ -234,42 +240,46 @@ export default function App() {
         total={filtered.length}
       />
     ) : (
-      <div className="processing-view">
+      <div className="flex h-full flex-col p-6">
         <button
-          className="button mobile-back"
+          className="mb-4 inline-flex w-fit items-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-foreground hidden max-[899px]:inline-flex"
           onClick={() => setMobileDetail(false)}
         >
-          <Icon name="back" />
+          <ArrowLeft className="size-4" />
           Back to queue
         </button>
         <AgentStatus events={events} ticketId={selected.ticket_id} />
       </div>
     )
   ) : (
-    <div className="workspace-empty relative overflow-hidden">
+    <div className="relative flex h-full flex-col items-center justify-center overflow-hidden bg-card p-10 text-center">
       <Spotlight className="-z-10" />
-      <div className="empty-illustration">
-        <Icon name="inbox" size={36} />
-        <span>
-          <Icon name="check" size={14} />
+      <div className="relative mb-6 grid size-20 place-items-center rounded-3xl border border-border bg-accent text-primary">
+        <InboxIcon className="size-9" />
+        <span className="absolute -bottom-1.5 -right-2 grid size-7 place-items-center rounded-full border-[3px] border-card bg-primary text-primary-foreground">
+          <Check className="size-3.5" />
         </span>
       </div>
-      <div className="eyebrow">A clearer way to support</div>
-      <h2>{loading ? "Opening your workspace…" : "The next step starts here."}</h2>
-      <p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        A clearer way to support
+      </p>
+      <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+        {loading ? "Opening your workspace…" : "The next step starts here."}
+      </h2>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
         {loading
           ? "Loading saved tickets and connecting to new activity."
           : "Select a ticket to review its response, understand the evidence, and decide what happens next."}
       </p>
       {mode === "demo" && !loading && (
-        <button className="button primary" onClick={() => navigate("demo")}>
-          <Icon name="flask" size={16} />
+        <Button className="mt-5" onClick={() => navigate("demo")}>
+          <FlaskConical />
           Explore the demo
-          <Icon name="arrow" size={16} />
-        </button>
+          <ArrowRight />
+        </Button>
       )}
-      <span className="empty-footnote">
-        <Icon name="shield" size={14} />
+      <span className="mt-6 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <ShieldCheck className="size-3.5" />
         Prepared by AI. Reviewed by you.
       </span>
     </div>

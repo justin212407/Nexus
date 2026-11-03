@@ -403,6 +403,62 @@ and deleted in #25.
 - Artifacts: `docs/screenshots/24-before-mode-unknown.png`, `24-after-mode-unknown.png`,
   `24-after-demo-mode.png`, `24-demo-mode-flow.webm`.
 
+---
+
+## #25 - Cleanup: rebuild remaining surfaces, delete dead code, purge legacy CSS
+
+**Commit**: (this commit) `refactor(ui): rebuild remaining surfaces and remove legacy stylesheet`
+**Date**: 2026-11-02
+**Issue**: [#25](https://github.com/justin212407/Nexus/issues/25)
+
+### Changes
+
+- Rebuilt the last legacy-styled surfaces with Tailwind + shadcn:
+  - `EvidencePanel` -> shadcn `Sheet` drawer (same content: brief summary, facts, sources,
+    narrative, recommended step, ETA note).
+  - `AgentStatus` -> Tailwind processing/failure view with the same `role="status"` /
+    `role="alert"` semantics and copy.
+  - `DemoLab` -> shadcn `Card`/`Button`/`Badge` scenario lab with the same scenarios,
+    disabled logic and copy.
+  - App empty state, processing wrapper, filtered-selection notice -> Tailwind; skip link kept
+    as the one global utility.
+- Deleted dead components: `MetricsBar.jsx`, `MetricsBar.css`, `Modal.jsx`
+  (replaced by shadcn Sheet/Dialog).
+- Pruned `frontend/src/index.css` from ~2,700 lines to ~280: imports, NEXUS tokens, `@theme`
+  inline mapping, base layer, scrollbars, skip link, reduced-motion guard. Added the missing
+  `--color-ink-secondary` / `--color-ink-muted` theme mappings (these classes were previously
+  inert).
+- Keyboard pass: tab order reaches every shell/queue/review control with accessible names;
+  dialog focus moves inside and returns to the `Review reply` trigger on Escape; the skip
+  link is focusable.
+  Known limitation: react-resizable-panels v4's Separator ignores custom attributes, so the
+  resize handle announces only `separator` + orientation, without a name.
+
+### Why
+
+- The CSS purge is the payoff of the epic: every surface now consumes the shared token
+  system, so there is one place to change colour, radius or typography.
+- Removing MetricsBar/Modal closes the last consumers of the old styles.
+
+### Tradeoffs
+
+- **Kept `Icon.jsx`** for the brand logo only; it is a 2KB SVG helper and replacing it with a
+  lucide mark would change the NEXUS identity for no functional gain.
+- **Removed the resize-handle label attempt** rather than patching vendor attributes at
+  runtime; documented instead.
+- **Did not delete the `useWorkspace` polling design** (15s reconciliation) - it backs the
+  SSE stream and is intentional, not legacy UI.
+
+### Verification
+
+- `npm run build` passes; `npm test` 14/14; `pytest` 49 passed, 3 skipped.
+- Zero console errors across Inbox, review, evidence sheet, Insights and Demo lab.
+- Keyboard/dialog focus checks scripted and passing.
+- Artifacts: `docs/screenshots/25-before-evidence-drawer.png`, `25-after-evidence-sheet.png`,
+  `25-before-demo-lab.png`, `25-after-demo-lab.png`, `25-after-review-1440.png`,
+  `25-after-mobile.png`, `25-cleanup-flow.webm`.
+
+
 
 
 
